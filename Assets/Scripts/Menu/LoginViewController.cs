@@ -24,6 +24,9 @@ public class LoginViewController : MonoBehaviour
     private Toggle createAccountView;
 
     [SerializeField]
+    private Toggle createProfileView;
+
+    [SerializeField]
     private TMPro.TMP_Text welcomeBackText;
 
     [SerializeField]
@@ -40,6 +43,9 @@ public class LoginViewController : MonoBehaviour
 
     [SerializeField]
     private TMPro.TMP_InputField signUpDisplayNameInputField;
+
+    [SerializeField]
+    private TMPro.TMP_InputField createProfileDisplayNameInputField;
 
     [SerializeField]
     private TMPro.TMP_Text createAccountErrorText;
@@ -115,7 +121,17 @@ public class LoginViewController : MonoBehaviour
 
     public void OnCreateAccount()
     {
-        DoSignUp(signUpUsernameInputField.text, signUpPasswordInputField.text, signUpDisplayNameInputField.text);
+        DoUsernamePasswordSignUp(signUpUsernameInputField.text, signUpPasswordInputField.text, signUpDisplayNameInputField.text);
+    }
+
+    public void OnGoogleLoginButtonPressed()
+    {
+        DoLoginWithGoogle();
+    }
+
+    public void OnCreateProfilePressed()
+    {
+        CreateProfile(createProfileDisplayNameInputField.text);
     }
 
 #endregion
@@ -143,14 +159,14 @@ public class LoginViewController : MonoBehaviour
         }
     }
 
-    private async void DoSignUp(string username, string password, string displayname)
+    private async void DoUsernamePasswordSignUp(string username, string password, string displayname)
     {
         var userCreateResponse = await ElementsClient.Api.SignUpUserAsync(new UserCreateRequest
-        {
-            Name = username,
-            Password = password,
-            Level = UserCreateRequest.LevelEnum.USER,
-            Profiles = new List<CreateProfileSignupRequest>
+        (
+            name: username,
+            password: password,
+            level: UserCreateRequest.LevelEnum.USER,
+            profiles: new List<CreateProfileSignupRequest>
             {
                 //Make sure that you've created an application named Pong in Elements
                 new CreateProfileSignupRequest(
@@ -158,7 +174,7 @@ public class LoginViewController : MonoBehaviour
                     displayName: displayname
                 )
             }
-        });
+        ));
 
         if(userCreateResponse != null)
         {
@@ -179,10 +195,53 @@ public class LoginViewController : MonoBehaviour
 
             if (profile != null)
             {
-                ElementsClient.GetSession().Profile = profile;                
+                ElementsClient.GetSession().Profile = profile;
             }
         }
 
+    }
+
+    private async void DoLoginWithGoogle()
+    {
+        var googleLogin = new GoogleOAuthLogin();
+        string idToken = await googleLogin.LoginAsync();
+        Debug.Log("Google ID Token: " + idToken);
+
+        // Send to your server
+        var sessionCreation = await ElementsClient.Api.CreateOidcSessionAsync(
+            new OidcSessionRequest(jwt: idToken)
+        );
+
+        if (sessionCreation != null)
+        {
+            ElementsClient.SetSession(sessionCreation);
+            await FetchProfile(sessionCreation.Session.User.Id);
+
+            if(ElementsClient.GetSession().Profile == null)
+            {
+                createProfileView.isOn = true;
+            }
+            else
+            {
+                LoadPongScene();
+            }
+        }
+    }
+
+    private async void CreateProfile(string displayName)
+    {
+        var profile = await ElementsClient.Api.CreateProfileAsync(new CreateProfileRequest
+        (
+            applicationId: ELEMENTS_APPLICATION_NAME,
+            displayName: displayName,
+            userId: ElementsClient.GetSession().User.Id
+        ));
+
+        if (profile != null)
+        {
+            ElementsClient.GetSession().Profile = profile;
+            LoadPongScene();
+        }
     }
 
 }

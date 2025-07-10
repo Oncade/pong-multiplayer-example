@@ -1,0 +1,21 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.NamazuStudios.Pong">
+    <!-- Be sure to change this to your company and app name. -->
+
+    <application ... >
+        <activity android:name="com.unity3d.player.UnityPlayerActivity"
+                  android:exported="true"
+                  android:launchMode="singleTask">
+            <!--
+            This gets added inside the UnityPlayerActivity.
+            Must match your Product Name from Project Settings -> Player
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="Pong" android:host="auth"/>
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

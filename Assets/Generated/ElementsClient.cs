@@ -131,7 +131,7 @@ namespace Elements.Client
         {
             var json = JsonConvert.SerializeObject(session);
 
-            File.WriteAllTextAsync(GetSessionCachePath(), json);
+            File.WriteAllText(GetSessionCachePath(), json);
         }
 
         private static void LoadSessionData()
