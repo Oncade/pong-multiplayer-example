@@ -1,5 +1,4 @@
 # Elements.Model.ProductBundle
-The list of product bundles that may be rewarded upon successful IAP transactions.
 
 ## Properties
 

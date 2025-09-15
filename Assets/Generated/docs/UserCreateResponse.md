@@ -17,6 +17,7 @@ Name | Type | Description | Notes
 **PrimaryPhoneNb** | **string** |  | [optional] 
 **Profiles** | [**List&lt;Profile&gt;**](Profile.md) |  | [optional] 
 **Password** | **string** |  | [optional] 
+**LinkedAccounts** | **List&lt;string&gt;** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

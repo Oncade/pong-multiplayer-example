@@ -16,7 +16,7 @@ public abstract class Paddle : MonoBehaviour
 
     public void ResetPosition()
     {
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         rb.position = new Vector2(rb.position.x, 0f);
     }
 
@@ -28,7 +28,7 @@ public abstract class Paddle : MonoBehaviour
             Collider2D paddle = collision.otherCollider;
 
             // Gather information about the collision
-            Vector2 ballDirection = ball.velocity.normalized;
+            Vector2 ballDirection = ball.linearVelocity.normalized;
             Vector2 contactDistance = ball.transform.position - paddle.bounds.center;
             Vector2 surfaceNormal = collision.GetContact(0).normal;
             Vector3 rotationAxis = Vector3.Cross(Vector3.up, surfaceNormal);
@@ -40,7 +40,7 @@ public abstract class Paddle : MonoBehaviour
             ballDirection = Quaternion.AngleAxis(bounceAngle, rotationAxis) * ballDirection;
 
             // Re-apply the new direction to the ball
-            ball.velocity = ballDirection * ball.velocity.magnitude;
+            ball.linearVelocity = ballDirection * ball.linearVelocity.magnitude;
         }
     }
 

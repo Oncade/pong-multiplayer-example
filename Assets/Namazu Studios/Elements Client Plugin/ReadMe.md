@@ -4,7 +4,7 @@
 - Unity 2018+
 - .Net 4.x enabled in project
 - Elements running at an accessible URL
- - To generate custom application code: Must also have an application created within Elements with the code already uploaded.
+ - [Optional] To generate custom element/application code: Must also have an [Application](https://manual.getelements.dev/core-features/applications) created within Elements with the code already uploaded.
 
 ### Summary 
 
@@ -17,7 +17,7 @@ Go to **Window -> Elements -> Elements Codegen** to get started.
 ### *******IMPORTANT*******
 
 *******
-You must have Elements running with a created application at the target URL.
+You must have Elements running at the target URL. [See here](https://manual.getelements.dev/quick-start/elements-in-five-minutes-or-less) for help getting started.
 
 Note: The tool might not be available if it is imported with active compiler errors. If this is the case, please resolve the errors and check again for the tool window.
 *******
@@ -30,7 +30,7 @@ Most properties can be overridden if you prefer to write your own implementation
 
 By default, the generated code will use JSON, and store the session in Application.PersistentDataPath.
 
-You can also use the APIs directly if you prefer to manage the requests yourself, or if you prefer a DI based architecture.
+You can also use the APIs directly instead of ElementsClient if you prefer to manage the requests yourself, or if you prefer a DI based architecture.
 
 See ElementsCodegen/Tests/ElementsTest.cs for an example on how to log in and get the current user (this might be commented out to avoid compiler errors before you generate the Elements API code).
 

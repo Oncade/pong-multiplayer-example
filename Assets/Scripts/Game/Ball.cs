@@ -16,7 +16,7 @@ public class Ball : MonoBehaviour
 
     public void ResetPosition()
     {
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         rb.position = Vector2.zero;
     }
 
@@ -39,9 +39,9 @@ public class Ball : MonoBehaviour
     private void FixedUpdate()
     {
         // Clamp the velocity of the ball to the max speed
-        Vector2 direction = rb.velocity.normalized;
+        Vector2 direction = rb.linearVelocity.normalized;
         currentSpeed = Mathf.Min(currentSpeed, maxSpeed);
-        rb.velocity = direction * currentSpeed;
+        rb.linearVelocity = direction * currentSpeed;
     }
 
 }

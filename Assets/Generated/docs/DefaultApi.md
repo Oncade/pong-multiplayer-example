@@ -27,6 +27,7 @@ All URIs are relative to *http://localhost:8080/api/rest*
 | [**CreateLeaderboard**](DefaultApi.md#createleaderboard) | **POST** /leaderboard | Creates a New Leaderboard |
 | [**CreateMatch**](DefaultApi.md#creatematch) | **POST** /match | Creates a Match |
 | [**CreateMatchmakingApplicationConfiguration**](DefaultApi.md#creatematchmakingapplicationconfiguration) | **POST** /application/{applicationNameOrId}/configuration/matchmaking | Creates a new iOS ApplicationConfiguration |
+| [**CreateMetadata**](DefaultApi.md#createmetadata) | **POST** /metadata | Creates a new Metadata object |
 | [**CreateMetadataSpec**](DefaultApi.md#createmetadataspec) | **POST** /metadata_spec | Creates a new Metadata Spec definition |
 | [**CreateMission**](DefaultApi.md#createmission) | **POST** /mission | Creates a new mission |
 | [**CreateMockSession**](DefaultApi.md#createmocksession) | **POST** /mock_session | Creates a Mock Session |
@@ -67,6 +68,7 @@ All URIs are relative to *http://localhost:8080/api/rest*
 | [**DeleteLeaderboard**](DefaultApi.md#deleteleaderboard) | **DELETE** /leaderboard/{nameOrId} | Deletes an Leaderboard |
 | [**DeleteMatch**](DefaultApi.md#deletematch) | **DELETE** /match/{matchId} | Deletes a Match |
 | [**DeleteMatchmakingApplicationConfiguration**](DefaultApi.md#deletematchmakingapplicationconfiguration) | **DELETE** /application/{applicationNameOrId}/configuration/matchmaking/{applicationConfigurationNameOrId} | Deletes a iOS ApplicationConfiguration |
+| [**DeleteMetadata**](DefaultApi.md#deletemetadata) | **DELETE** /metadata/{id} | Deletes a specific Metadata object |
 | [**DeleteMetadataSpec**](DefaultApi.md#deletemetadataspec) | **DELETE** /metadata_spec/{metadataSpecId} | Deletes a MetadataSpec |
 | [**DeleteMission**](DefaultApi.md#deletemission) | **DELETE** /mission/{missionNameOrId} | Deletes the Mission identified by id or by name |
 | [**DeletePSNApplicationConfiguration**](DefaultApi.md#deletepsnapplicationconfiguration) | **DELETE** /application/{applicationNameOrId}/configuration/psn/{applicationConfigurationNameOrId} | Deletes a PSN ApplicationConfiguration |
@@ -117,6 +119,8 @@ All URIs are relative to *http://localhost:8080/api/rest*
 | [**GetMatchedUserProfilesWithPhoneNumbers**](DefaultApi.md#getmatcheduserprofileswithphonenumbers) | **POST** /invite | Match normalized phone numbers with requested list |
 | [**GetMatches**](DefaultApi.md#getmatches) | **GET** /match | List Matches |
 | [**GetMatchmakingApplicationConfiguration**](DefaultApi.md#getmatchmakingapplicationconfiguration) | **GET** /application/{applicationNameOrId}/configuration/matchmaking/{applicationConfigurationNameOrId} | Gets a iOS Application Configuration |
+| [**GetMetadataObject**](DefaultApi.md#getmetadataobject) | **GET** /metadata/{id} | Gets a specific Metadata object |
+| [**GetMetadataObjects**](DefaultApi.md#getmetadataobjects) | **GET** /metadata | Search Metadata |
 | [**GetMetadataSpec**](DefaultApi.md#getmetadataspec) | **GET** /metadata_spec/{metadataSpecNameOrId} | Gets a specific Metadata Spec |
 | [**GetMetadataSpecs**](DefaultApi.md#getmetadataspecs) | **GET** /metadata_spec | Get Metadata Specs |
 | [**GetMissionByNameOrId**](DefaultApi.md#getmissionbynameorid) | **GET** /mission/{missionNameOrId} | Retrieves a single Mission by id or by name |
@@ -171,10 +175,12 @@ All URIs are relative to *http://localhost:8080/api/rest*
 | [**UpdateLargeObjectContents**](DefaultApi.md#updatelargeobjectcontents) | **PUT** /large_object/{largeObjectId}/content | Updates a LargeObject content |
 | [**UpdateLeaderboard**](DefaultApi.md#updateleaderboard) | **PUT** /leaderboard/{nameOrId} | Updates an Leaderboard |
 | [**UpdateMatchmakingApplicationConfiguration**](DefaultApi.md#updatematchmakingapplicationconfiguration) | **PUT** /application/{applicationNameOrId}/configuration/matchmaking/{applicationConfigurationNameOrId} | Updates a iOS ApplicationConfiguration |
+| [**UpdateMetadata**](DefaultApi.md#updatemetadata) | **PUT** /metadata/{id} | Updates a specific Metadata object |
 | [**UpdateMetadataSpec**](DefaultApi.md#updatemetadataspec) | **PUT** /metadata_spec/{metadataSpecId} | Updates a Metadata Spec |
 | [**UpdateMission**](DefaultApi.md#updatemission) | **PUT** /mission/{missionNameOrId} | Updates an entire single Mission |
 | [**UpdatePSNApplicationConfiguration**](DefaultApi.md#updatepsnapplicationconfiguration) | **PUT** /application/{applicationNameOrId}/configuration/psn/{applicationConfigurationNameOrId} | Updates a PSN ApplicationConfiguration |
-| [**UpdateProductBundleForApplicationConfiguration**](DefaultApi.md#updateproductbundleforapplicationconfiguration) | **PUT** /application/{applicationNameOrId}/configuration/{applicationConfigurationId} | Updates the ProductBundle |
+| [**UpdateProductBundleForApplicationConfiguration**](DefaultApi.md#updateproductbundleforapplicationconfiguration) | **PUT** /application/{applicationNameOrId}/configuration/google_play/{applicationConfigurationNameOrId}/product_bundles | Updates the ProductBundle |
+| [**UpdateProductBundleForApplicationConfiguration1**](DefaultApi.md#updateproductbundleforapplicationconfiguration1) | **PUT** /application/{applicationNameOrId}/configuration/ios/{applicationConfigurationNameOrId}/product_bundles | Updates the ProductBundle |
 | [**UpdateProfile**](DefaultApi.md#updateprofile) | **PUT** /profile/{profileId} | Updates a Profile |
 | [**UpdateProfileImage**](DefaultApi.md#updateprofileimage) | **PUT** /profile/{profileId}/image | Updates a Profile image object |
 | [**UpdateProgress**](DefaultApi.md#updateprogress) | **PUT** /progress/{progressId} | Updates a single Progress |
@@ -283,20 +289,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -393,20 +399,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -502,13 +508,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -597,20 +603,20 @@ void (empty response body)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: */*, application/json
+ - **Content-Type**: application/json
+ - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -705,20 +711,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -820,13 +826,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -921,20 +927,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -1029,20 +1035,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -1137,20 +1143,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -1245,20 +1251,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -1353,20 +1359,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -1463,20 +1469,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -1573,20 +1579,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -1679,20 +1685,20 @@ void (empty response body)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: */*, application/json
+ - **Content-Type**: application/json
+ - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -1789,20 +1795,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -1899,20 +1905,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -2007,20 +2013,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -2122,13 +2128,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -2228,13 +2234,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -2334,13 +2340,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -2442,13 +2448,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -2543,20 +2549,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -2653,6 +2659,114 @@ catch (ApiException e)
 
 ### HTTP request headers
 
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
+| **404** |  |  -  |
+| **0** | default response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="createmetadata"></a>
+# **CreateMetadata**
+> Metadata CreateMetadata (CreateMetadataRequest createMetadataRequest = null)
+
+Creates a new Metadata object
+
+Creates a new Metadata object with the provided details.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using Elements.Api;
+using Elements.Client;
+using Elements.Model;
+
+namespace Example
+{
+    public class CreateMetadataExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "http://localhost:8080/api/rest";
+            // Configure API key authorization: auth_bearer
+            config.AddApiKey("Authorization", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // config.AddApiKeyPrefix("Authorization", "Bearer");
+            // Configure API key authorization: session_secret
+            config.AddApiKey("Elements-SessionSecret", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // config.AddApiKeyPrefix("Elements-SessionSecret", "Bearer");
+
+            var apiInstance = new DefaultApi(config);
+            var createMetadataRequest = new CreateMetadataRequest(); // CreateMetadataRequest |  (optional) 
+
+            try
+            {
+                // Creates a new Metadata object
+                Metadata result = apiInstance.CreateMetadata(createMetadataRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling DefaultApi.CreateMetadata: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the CreateMetadataWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Creates a new Metadata object
+    ApiResponse<Metadata> response = apiInstance.CreateMetadataWithHttpInfo(createMetadataRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling DefaultApi.CreateMetadataWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **createMetadataRequest** | [**CreateMetadataRequest**](CreateMetadataRequest.md) |  | [optional]  |
+
+### Return type
+
+[**Metadata**](Metadata.md)
+
+### Authorization
+
+[auth_bearer](../README.md#auth_bearer), [session_secret](../README.md#session_secret)
+
+### HTTP request headers
+
  - **Content-Type**: Not defined
  - **Accept**: application/json
 
@@ -2660,13 +2774,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -2761,20 +2875,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -2869,20 +2983,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -2984,13 +3098,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -3083,20 +3197,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -3198,13 +3312,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -3306,13 +3420,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -3409,20 +3523,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -3517,20 +3631,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -3625,20 +3739,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -3740,13 +3854,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -3848,13 +3962,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -3958,13 +4072,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -4068,13 +4182,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -4169,20 +4283,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -4277,20 +4391,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -4385,20 +4499,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -4500,13 +4614,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -4608,13 +4722,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -4718,13 +4832,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -4822,13 +4936,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -4926,13 +5040,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -5030,13 +5144,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -5134,13 +5248,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -5238,13 +5352,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -5342,13 +5456,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -5446,13 +5560,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -5550,13 +5664,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -5652,13 +5766,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -5756,13 +5870,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -5856,13 +5970,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -5962,13 +6076,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -6068,13 +6182,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -6172,13 +6286,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -6276,13 +6390,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -6382,13 +6496,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -6488,13 +6602,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -6590,13 +6704,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -6694,13 +6808,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -6798,13 +6912,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -6904,13 +7018,117 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
+| **404** |  |  -  |
+| **0** | default response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="deletemetadata"></a>
+# **DeleteMetadata**
+> void DeleteMetadata (string id)
+
+Deletes a specific Metadata object
+
+Deletes a specific metadata object by name or id.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using Elements.Api;
+using Elements.Client;
+using Elements.Model;
+
+namespace Example
+{
+    public class DeleteMetadataExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "http://localhost:8080/api/rest";
+            // Configure API key authorization: auth_bearer
+            config.AddApiKey("Authorization", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // config.AddApiKeyPrefix("Authorization", "Bearer");
+            // Configure API key authorization: session_secret
+            config.AddApiKey("Elements-SessionSecret", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // config.AddApiKeyPrefix("Elements-SessionSecret", "Bearer");
+
+            var apiInstance = new DefaultApi(config);
+            var id = "id_example";  // string | 
+
+            try
+            {
+                // Deletes a specific Metadata object
+                apiInstance.DeleteMetadata(id);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling DefaultApi.DeleteMetadata: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the DeleteMetadataWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Deletes a specific Metadata object
+    apiInstance.DeleteMetadataWithHttpInfo(id);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling DefaultApi.DeleteMetadataWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **id** | **string** |  |  |
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[auth_bearer](../README.md#auth_bearer), [session_secret](../README.md#session_secret)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -7008,13 +7226,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -7112,13 +7330,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -7218,13 +7436,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -7322,13 +7540,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -7424,13 +7642,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -7528,13 +7746,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -7634,13 +7852,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -7738,13 +7956,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -7842,13 +8060,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -7948,13 +8166,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -8052,13 +8270,13 @@ void (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -8160,13 +8378,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -8274,13 +8492,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -8382,13 +8600,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -8496,13 +8714,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -8608,13 +8826,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -8716,13 +8934,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -8824,13 +9042,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -8932,13 +9150,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -9044,13 +9262,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -9156,13 +9374,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -9268,13 +9486,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -9372,13 +9590,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -9475,13 +9693,13 @@ This endpoint does not need any parameter.
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -9578,13 +9796,13 @@ This endpoint does not need any parameter.
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -9684,13 +9902,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -9788,13 +10006,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -9896,13 +10114,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -10012,13 +10230,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -10120,13 +10338,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -10230,13 +10448,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -10340,13 +10558,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -10448,13 +10666,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -10560,13 +10778,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -10672,13 +10890,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -10780,13 +10998,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -10892,13 +11110,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -11002,13 +11220,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -11112,13 +11330,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -11222,13 +11440,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -11330,13 +11548,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -11446,13 +11664,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -11554,13 +11772,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -11660,13 +11878,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -11768,13 +11986,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -11880,13 +12098,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -11990,13 +12208,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** |  |  -  |
 
@@ -12095,20 +12313,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -12214,13 +12432,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -12324,13 +12542,233 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
+| **404** |  |  -  |
+| **0** | default response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="getmetadataobject"></a>
+# **GetMetadataObject**
+> Metadata GetMetadataObject (string id)
+
+Gets a specific Metadata object
+
+Gets a specific metadata object by name or id.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using Elements.Api;
+using Elements.Client;
+using Elements.Model;
+
+namespace Example
+{
+    public class GetMetadataObjectExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "http://localhost:8080/api/rest";
+            // Configure API key authorization: auth_bearer
+            config.AddApiKey("Authorization", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // config.AddApiKeyPrefix("Authorization", "Bearer");
+            // Configure API key authorization: session_secret
+            config.AddApiKey("Elements-SessionSecret", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // config.AddApiKeyPrefix("Elements-SessionSecret", "Bearer");
+
+            var apiInstance = new DefaultApi(config);
+            var id = "id_example";  // string | 
+
+            try
+            {
+                // Gets a specific Metadata object
+                Metadata result = apiInstance.GetMetadataObject(id);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling DefaultApi.GetMetadataObject: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the GetMetadataObjectWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Gets a specific Metadata object
+    ApiResponse<Metadata> response = apiInstance.GetMetadataObjectWithHttpInfo(id);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling DefaultApi.GetMetadataObjectWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **id** | **string** |  |  |
+
+### Return type
+
+[**Metadata**](Metadata.md)
+
+### Authorization
+
+[auth_bearer](../README.md#auth_bearer), [session_secret](../README.md#session_secret)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
+| **404** |  |  -  |
+| **0** | default response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="getmetadataobjects"></a>
+# **GetMetadataObjects**
+> PaginationMetadata GetMetadataObjects (int? offset = null, int? count = null, string search = null)
+
+Search Metadata
+
+Searches all metadata in the system and returning all matches against the given search filter.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using Elements.Api;
+using Elements.Client;
+using Elements.Model;
+
+namespace Example
+{
+    public class GetMetadataObjectsExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "http://localhost:8080/api/rest";
+            // Configure API key authorization: auth_bearer
+            config.AddApiKey("Authorization", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // config.AddApiKeyPrefix("Authorization", "Bearer");
+            // Configure API key authorization: session_secret
+            config.AddApiKey("Elements-SessionSecret", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // config.AddApiKeyPrefix("Elements-SessionSecret", "Bearer");
+
+            var apiInstance = new DefaultApi(config);
+            var offset = 56;  // int? |  (optional) 
+            var count = 56;  // int? |  (optional) 
+            var search = "search_example";  // string |  (optional) 
+
+            try
+            {
+                // Search Metadata
+                PaginationMetadata result = apiInstance.GetMetadataObjects(offset, count, search);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling DefaultApi.GetMetadataObjects: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the GetMetadataObjectsWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Search Metadata
+    ApiResponse<PaginationMetadata> response = apiInstance.GetMetadataObjectsWithHttpInfo(offset, count, search);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling DefaultApi.GetMetadataObjectsWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **offset** | **int?** |  | [optional]  |
+| **count** | **int?** |  | [optional]  |
+| **search** | **string** |  | [optional]  |
+
+### Return type
+
+[**PaginationMetadata**](PaginationMetadata.md)
+
+### Authorization
+
+[auth_bearer](../README.md#auth_bearer), [session_secret](../README.md#session_secret)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -12432,13 +12870,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -12542,13 +12980,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -12650,13 +13088,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -12764,13 +13202,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -12874,13 +13312,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -12982,13 +13420,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -13090,13 +13528,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -13200,13 +13638,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -13320,13 +13758,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -13428,13 +13866,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -13531,13 +13969,13 @@ This endpoint does not need any parameter.
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -13647,13 +14085,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -13763,13 +14201,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -13869,13 +14307,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -13981,13 +14419,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -14089,13 +14527,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -14205,13 +14643,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -14313,13 +14751,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -14423,13 +14861,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -14539,13 +14977,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -14653,13 +15091,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -14767,13 +15205,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -14870,13 +15308,13 @@ This endpoint does not need any parameter.
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -14978,13 +15416,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -15092,13 +15530,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -15200,13 +15638,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -15314,13 +15752,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -15332,7 +15770,7 @@ catch (ApiException e)
 
 Gets a Specific User
 
-Gets a specific user by email or unique user ID.
+Gets a specific user by name, email, or unique user ID.
 
 ### Example
 ```csharp
@@ -15422,13 +15860,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -15532,13 +15970,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -15644,13 +16082,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -15752,13 +16190,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -15864,13 +16302,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -15967,13 +16405,13 @@ This endpoint does not need any parameter.
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -16077,13 +16515,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -16185,13 +16623,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -16303,13 +16741,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -16409,13 +16847,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -16515,13 +16953,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -16616,20 +17054,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -16733,13 +17171,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -16836,20 +17274,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -16946,20 +17384,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -17056,20 +17494,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -17164,20 +17602,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -17274,20 +17712,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -17386,20 +17824,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -17498,20 +17936,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -17610,20 +18048,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -17722,20 +18160,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -17832,20 +18270,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -17947,13 +18385,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -18055,13 +18493,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -18165,13 +18603,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -18270,6 +18708,116 @@ catch (ApiException e)
 
 ### HTTP request headers
 
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
+| **404** |  |  -  |
+| **0** | default response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="updatemetadata"></a>
+# **UpdateMetadata**
+> Metadata UpdateMetadata (string id, UpdateMetadataRequest updateMetadataRequest = null)
+
+Updates a specific Metadata object
+
+Updates a specific metadata object by name or id.
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using Elements.Api;
+using Elements.Client;
+using Elements.Model;
+
+namespace Example
+{
+    public class UpdateMetadataExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "http://localhost:8080/api/rest";
+            // Configure API key authorization: auth_bearer
+            config.AddApiKey("Authorization", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // config.AddApiKeyPrefix("Authorization", "Bearer");
+            // Configure API key authorization: session_secret
+            config.AddApiKey("Elements-SessionSecret", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // config.AddApiKeyPrefix("Elements-SessionSecret", "Bearer");
+
+            var apiInstance = new DefaultApi(config);
+            var id = "id_example";  // string | 
+            var updateMetadataRequest = new UpdateMetadataRequest(); // UpdateMetadataRequest |  (optional) 
+
+            try
+            {
+                // Updates a specific Metadata object
+                Metadata result = apiInstance.UpdateMetadata(id, updateMetadataRequest);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling DefaultApi.UpdateMetadata: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the UpdateMetadataWithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Updates a specific Metadata object
+    ApiResponse<Metadata> response = apiInstance.UpdateMetadataWithHttpInfo(id, updateMetadataRequest);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling DefaultApi.UpdateMetadataWithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **id** | **string** |  |  |
+| **updateMetadataRequest** | [**UpdateMetadataRequest**](UpdateMetadataRequest.md) |  | [optional]  |
+
+### Return type
+
+[**Metadata**](Metadata.md)
+
+### Authorization
+
+[auth_bearer](../README.md#auth_bearer), [session_secret](../README.md#session_secret)
+
+### HTTP request headers
+
  - **Content-Type**: Not defined
  - **Accept**: application/json
 
@@ -18277,13 +18825,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -18380,20 +18928,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -18490,20 +19038,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -18602,20 +19150,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -18623,7 +19171,7 @@ catch (ApiException e)
 
 <a id="updateproductbundleforapplicationconfiguration"></a>
 # **UpdateProductBundleForApplicationConfiguration**
-> ApplicationConfiguration UpdateProductBundleForApplicationConfiguration (string applicationNameOrId, string applicationConfigurationId, List<ProductBundle> productBundle = null)
+> ApplicationConfiguration UpdateProductBundleForApplicationConfiguration (string applicationNameOrId, string applicationConfigurationNameOrId, List<ProductBundle> productBundle = null)
 
 Updates the ProductBundle
 
@@ -18656,13 +19204,13 @@ namespace Example
 
             var apiInstance = new DefaultApi(config);
             var applicationNameOrId = "applicationNameOrId_example";  // string | 
-            var applicationConfigurationId = "applicationConfigurationId_example";  // string | 
+            var applicationConfigurationNameOrId = "applicationConfigurationNameOrId_example";  // string | 
             var productBundle = new List<ProductBundle>(); // List<ProductBundle> |  (optional) 
 
             try
             {
                 // Updates the ProductBundle
-                ApplicationConfiguration result = apiInstance.UpdateProductBundleForApplicationConfiguration(applicationNameOrId, applicationConfigurationId, productBundle);
+                ApplicationConfiguration result = apiInstance.UpdateProductBundleForApplicationConfiguration(applicationNameOrId, applicationConfigurationNameOrId, productBundle);
                 Debug.WriteLine(result);
             }
             catch (ApiException  e)
@@ -18683,7 +19231,7 @@ This returns an ApiResponse object which contains the response data, status code
 try
 {
     // Updates the ProductBundle
-    ApiResponse<ApplicationConfiguration> response = apiInstance.UpdateProductBundleForApplicationConfigurationWithHttpInfo(applicationNameOrId, applicationConfigurationId, productBundle);
+    ApiResponse<ApplicationConfiguration> response = apiInstance.UpdateProductBundleForApplicationConfigurationWithHttpInfo(applicationNameOrId, applicationConfigurationNameOrId, productBundle);
     Debug.Write("Status Code: " + response.StatusCode);
     Debug.Write("Response Headers: " + response.Headers);
     Debug.Write("Response Body: " + response.Data);
@@ -18701,7 +19249,7 @@ catch (ApiException e)
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
 | **applicationNameOrId** | **string** |  |  |
-| **applicationConfigurationId** | **string** |  |  |
+| **applicationConfigurationNameOrId** | **string** |  |  |
 | **productBundle** | [**List&lt;ProductBundle&gt;**](ProductBundle.md) |  | [optional]  |
 
 ### Return type
@@ -18721,13 +19269,125 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
+| **404** |  |  -  |
+| **0** | default response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a id="updateproductbundleforapplicationconfiguration1"></a>
+# **UpdateProductBundleForApplicationConfiguration1**
+> ApplicationConfiguration UpdateProductBundleForApplicationConfiguration1 (string applicationNameOrId, string applicationConfigurationNameOrId, List<ProductBundle> productBundle = null)
+
+Updates the ProductBundle
+
+Updates the ProductBundle for the given ApplicationConfiguration
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using Elements.Api;
+using Elements.Client;
+using Elements.Model;
+
+namespace Example
+{
+    public class UpdateProductBundleForApplicationConfiguration1Example
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "http://localhost:8080/api/rest";
+            // Configure API key authorization: auth_bearer
+            config.AddApiKey("Authorization", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // config.AddApiKeyPrefix("Authorization", "Bearer");
+            // Configure API key authorization: session_secret
+            config.AddApiKey("Elements-SessionSecret", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // config.AddApiKeyPrefix("Elements-SessionSecret", "Bearer");
+
+            var apiInstance = new DefaultApi(config);
+            var applicationNameOrId = "applicationNameOrId_example";  // string | 
+            var applicationConfigurationNameOrId = "applicationConfigurationNameOrId_example";  // string | 
+            var productBundle = new List<ProductBundle>(); // List<ProductBundle> |  (optional) 
+
+            try
+            {
+                // Updates the ProductBundle
+                ApplicationConfiguration result = apiInstance.UpdateProductBundleForApplicationConfiguration1(applicationNameOrId, applicationConfigurationNameOrId, productBundle);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling DefaultApi.UpdateProductBundleForApplicationConfiguration1: " + e.Message);
+                Debug.Print("Status Code: " + e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+#### Using the UpdateProductBundleForApplicationConfiguration1WithHttpInfo variant
+This returns an ApiResponse object which contains the response data, status code and headers.
+
+```csharp
+try
+{
+    // Updates the ProductBundle
+    ApiResponse<ApplicationConfiguration> response = apiInstance.UpdateProductBundleForApplicationConfiguration1WithHttpInfo(applicationNameOrId, applicationConfigurationNameOrId, productBundle);
+    Debug.Write("Status Code: " + response.StatusCode);
+    Debug.Write("Response Headers: " + response.Headers);
+    Debug.Write("Response Body: " + response.Data);
+}
+catch (ApiException e)
+{
+    Debug.Print("Exception when calling DefaultApi.UpdateProductBundleForApplicationConfiguration1WithHttpInfo: " + e.Message);
+    Debug.Print("Status Code: " + e.ErrorCode);
+    Debug.Print(e.StackTrace);
+}
+```
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **applicationNameOrId** | **string** |  |  |
+| **applicationConfigurationNameOrId** | **string** |  |  |
+| **productBundle** | [**List&lt;ProductBundle&gt;**](ProductBundle.md) |  | [optional]  |
+
+### Return type
+
+[**ApplicationConfiguration**](ApplicationConfiguration.md)
+
+### Authorization
+
+[auth_bearer](../README.md#auth_bearer), [session_secret](../README.md#session_secret)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -18824,20 +19484,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -18932,20 +19592,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -19042,20 +19702,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -19152,20 +19812,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -19269,13 +19929,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -19379,13 +20039,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -19491,13 +20151,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -19594,20 +20254,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -19704,20 +20364,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -19814,20 +20474,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -19924,20 +20584,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -20034,20 +20694,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -20144,20 +20804,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -20263,13 +20923,13 @@ catch (ApiException e)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -20362,20 +21022,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 
@@ -20468,20 +21128,20 @@ catch (ApiException e)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **501** |  |  -  |
-| **409** |  |  -  |
-| **400** |  |  -  |
-| **500** |  |  -  |
-| **401** |  |  -  |
-| **503** |  |  -  |
 | **403** |  |  -  |
+| **400** |  |  -  |
+| **501** |  |  -  |
+| **503** |  |  -  |
+| **409** |  |  -  |
+| **401** |  |  -  |
+| **500** |  |  -  |
 | **404** |  |  -  |
 | **0** | default response |  -  |
 

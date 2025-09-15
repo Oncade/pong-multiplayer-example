@@ -14,7 +14,7 @@ namespace Elements.Client
             if(responseData != null && responseData.GetType() == typeof(Model.SessionCreation))
             {
                 var session = (Model.SessionCreation)responseData;
-                ElementsClient.SetSession(session);
+                ElementsClient.SetSessionCreation(session);
             }
         }
 

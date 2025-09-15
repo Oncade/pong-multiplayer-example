@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System;
-using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -58,12 +56,15 @@ public class LoginViewController : MonoBehaviour
 
 #region Setup
 
-    private void Start()
+    private async void Start()
     {
         //You only need to do this once
         if(!ElementsClient.IsInitialized())
         {
             ElementsClient.Initialize(ELEMENTS_ROOT_URL);
+            HelloClient.HelloApi.Configuration.DefaultHeaders["Elements-SessionSecret"] = ElementsClient.Api.Configuration.ApiKey["Elements-SessionSecret"];
+            var respsonse = await HelloClient.HelloApi.SayHelloWithAuthAsync();
+            Debug.Log(respsonse);
         }
 
         SetDefaultViewState();
@@ -153,7 +154,7 @@ public class LoginViewController : MonoBehaviour
 
         if (sessionCreation != null)
         {
-            ElementsClient.SetSession(sessionCreation);
+            ElementsClient.SetSessionCreation(sessionCreation);
             await FetchProfile(sessionCreation.Session.User.Id);
             LoadPongScene();
         }
@@ -195,7 +196,10 @@ public class LoginViewController : MonoBehaviour
 
             if (profile != null)
             {
-                ElementsClient.GetSession().Profile = profile;
+                ElementsClient.SetProfile(profile);
+                HelloClient.HelloApi.Configuration.ApiKey["Elements-SessionSecret"] = ElementsClient.Api.Configuration.ApiKey["Elements-SessionSecret"];
+                var respsonse = await HelloClient.HelloApi.SayHelloWithAuthAsync();
+                Debug.Log(respsonse);
             }
         }
 
@@ -214,7 +218,7 @@ public class LoginViewController : MonoBehaviour
 
         if (sessionCreation != null)
         {
-            ElementsClient.SetSession(sessionCreation);
+            ElementsClient.SetSessionCreation(sessionCreation);
             await FetchProfile(sessionCreation.Session.User.Id);
 
             if(ElementsClient.GetSession().Profile == null)

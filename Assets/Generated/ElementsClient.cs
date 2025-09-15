@@ -13,16 +13,17 @@ namespace Elements.Client
 
         private static Model.Session session;
 
+        private static string sessionToken;
+
         private static bool shouldCacheSession;
 
         private static bool initialized;
 
         public static Api.DefaultApi Api
         {
-            get
-            {
+            get {
 
-                if (api == null)
+                if(api == null)
                 {
                     Debug.LogError("Api not initliazed.You must call Elements.Initialize with the root url of your Elements instance first.");
                 }
@@ -49,11 +50,17 @@ namespace Elements.Client
         /// <param name="cacheSession">If true, will attempt to load the session data from, and save it to disk as appropriate.
         /// If not, the session will be only be stored in memory and you will have to log in every time unless you manually store the session yourself.</param>
         public static void Initialize(string rootUrl, bool cacheSession)
-        {            
+        {
             api = new Api.DefaultApi(rootUrl);
-            api.Configuration.DefaultHeaders["Content-Type"] = "application/json";
             api.ApiClient.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-            api.ApiClient.SerializerSettings.Error += (object sender, Newtonsoft.Json.Serialization.ErrorEventArgs e) => e.ErrorContext.Handled = true;
+            api.ApiClient.SerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            api.ApiClient.SerializerSettings.Converters = new System.Collections.Generic.List<JsonConverter> { new Newtonsoft.Json.Converters.StringEnumConverter() };
+
+            //Sometimes the JSON deserializer won't apply the above rules to null values
+            api.ApiClient.SerializerSettings.Error = (sender, errorArgs) =>
+            { 
+                errorArgs.ErrorContext.Handled = true;
+            };
 
             shouldCacheSession = cacheSession;
 
@@ -65,19 +72,57 @@ namespace Elements.Client
             initialized = true;
         }
 
-        /// <summary>
+         /// <summary>
         /// Adds the session header to subsequent requests
         /// </summary>
         /// <param name="session">The SessionCreation object returned by the Elements server.</param>
-        public static void SetSession(Model.SessionCreation sessionCreation)
+        public static void SetSessionCreation(Model.SessionCreation sessionCreation)
         {
-            Api.Configuration.ApiKey["Elements-SessionSecret"] = sessionCreation.SessionSecret;
-
             session = sessionCreation.Session;
+            sessionToken = sessionCreation.SessionSecret;
+            SetSessionHeader();
 
             if (shouldCacheSession)
             {
-                SaveSessionData(sessionCreation);
+                SaveSessionData();
+            }
+        }
+
+        /// <summary>
+        /// Overwrites the session info in memory, and saves to disk if caching is enabled.
+        /// </summary>
+        /// <param name="s">The Session to assign</param>
+        public static void SetSession(Model.Session s)
+        {
+            session = s;
+
+            if (shouldCacheSession)
+            {
+                SaveSessionData();
+            }
+        }
+
+        /// <summary>
+        /// Gets the active session info
+        /// </summary>
+        /// <returns>The Session object</returns>
+        public static Model.Session GetSession()
+        {
+            return session;
+        }
+
+        /// <summary>
+        /// Adds a profile to the session and saves to disk if caching is enabled.
+        /// </summary>
+        /// <param name="p">The profile to set in the session</param>
+        public static void SetProfile(Model.Profile p)
+        {
+            session.Profile = p;
+            SetSessionHeader();
+
+            if (shouldCacheSession)
+            {
+                SaveSessionData();
             }
         }
 
@@ -87,7 +132,7 @@ namespace Elements.Client
         /// <returns>true if the session is active</returns>
         public static bool IsSessionActive()
         {
-            return session != null && session.Expiry > System.DateTime.UtcNow.Millisecond;
+            return session != null && session.Expiry > System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
 
         /// <summary>
@@ -100,36 +145,40 @@ namespace Elements.Client
         }
 
         /// <summary>
-        /// Removes the session token from the Api Configuration headers and clears the session in memory.
+        /// Clears the session from memory and deletes it from disk.
         /// </summary>
         public static void ClearSession()
         {
-            session = null;
-            Api.Configuration.ApiKey.Remove("Elements-SessionSecret");            
-        }
-
-        /// <summary>
-        /// Clears the session from memory and deletes it from disk.
-        /// </summary>
-        public static void LogOut()
-        {
-            ClearSession();
+            LogOut();
             DeleteSessionData();
         }
 
-        public static Model.Session GetSession()
+        /// <summary>
+        /// Removes the session token from the Api Configuration headers and clears the session in memory.
+        /// </summary>
+        public static void LogOut()
         {
-            return session;
+            session = null;
+            sessionToken = null;
+
+            Api.Configuration.ApiKey["Elements-SessionSecret"] = null;
         }
+
 
         private static string GetSessionCachePath()
         {
             return Path.Combine(Application.persistentDataPath, "ElementsSessionCache.json");
         }
 
-        private static void SaveSessionData(Model.SessionCreation session)
+        private static void SaveSessionData()
         {
-            var json = JsonConvert.SerializeObject(session);
+            var sessionCreationData = new Model.SessionCreation
+            {
+                Session = session,
+                SessionSecret = sessionToken
+            };
+
+            var json = JsonConvert.SerializeObject(sessionCreationData);
 
             File.WriteAllText(GetSessionCachePath(), json);
         }
@@ -144,8 +193,19 @@ namespace Elements.Client
                 var sessionCreation = JsonConvert.DeserializeObject<Model.SessionCreation>(text);
 
                 session = sessionCreation.Session;
-                Api.Configuration.ApiKey.Add("Elements-SessionSecret", sessionCreation.SessionSecret);
+                sessionToken = sessionCreation.SessionSecret;
+
+                //We don't want to assign an expired token
+                if(IsSessionActive())
+                {
+                    SetSessionHeader();
+                }
             }
+        }
+
+        private static void SetSessionHeader()
+        {            
+            Api.Configuration.ApiKey["Elements-SessionSecret"] = session.Profile?.Id != null ? sessionToken + " p" + session.Profile.Id : sessionToken;
         }
 
         private static void DeleteSessionData()
@@ -158,6 +218,5 @@ namespace Elements.Client
             }
 
         }
-
     }
 }

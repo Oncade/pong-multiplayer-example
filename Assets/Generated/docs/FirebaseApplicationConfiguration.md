@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | The database assigned ID for the application configuration. | [optional] 
-**Category** | **string** | The category for the application configuration. | 
-**UniqueIdentifier** | **string** | The application-configuration specific unique ID.  (Varies by ConfigurationCategory) | [optional] 
+**Id** | **string** | The database assigned ID for the application configuration. | 
+**Name** | **string** | The application-configuration specific unique ID. Unique per application per category. | 
+**Type** | **string** | The fully-qualified Java type of ApplicationConfiguration. | 
+**Description** | **string** |  | 
 **Parent** | [**Application**](Application.md) |  | 
-**ProductBundles** | [**List&lt;ProductBundle&gt;**](ProductBundle.md) | The list of product bundles that may be rewarded upon successful IAP transactions. | [optional] 
 **ProjectId** | **string** | The contents of the serviceAccountCredentials.json file. | 
 **ServiceAccountCredentials** | **string** | The contents of the serviceAccountCredentials.json file. | 
 
