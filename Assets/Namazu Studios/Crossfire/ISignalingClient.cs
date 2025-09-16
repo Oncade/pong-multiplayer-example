@@ -13,6 +13,10 @@ namespace Elements.Crossfire
         event Action<SignalingMessage> OnMessageReceived;
         event Action OnDisconnected;
 
+        event Action<int> OnReconnectAttempt; // attempt number
+        event Action<float> OnReconnectCountdown; // seconds remaining
+        event Action<string> OnSignalingError; // error details
+
         void Connect(string url, string profileId, string sessionToken);
         void SendWSMessage(string message);
         void Disconnect();

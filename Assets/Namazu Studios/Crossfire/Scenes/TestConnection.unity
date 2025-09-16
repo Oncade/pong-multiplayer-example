@@ -1147,96 +1147,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 649364137}
   m_CullTransparentMesh: 1
---- !u!1 &914644862
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 914644864}
-  - component: {fileID: 914644865}
-  - component: {fileID: 914644866}
-  - component: {fileID: 914644867}
-  m_Layer: 0
-  m_Name: PlayerClient
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &914644864
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 914644862}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 338.11594, y: 84.936356, z: 0.294274}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &914644865
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 914644862}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61016045e3db840f19473515dcbd4001, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mode: 1
---- !u!114 &914644866
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 914644862}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ddee375d958c4826b9c573f991b9884, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  serverHost: ws://localhost:8080/app/ws/crossfire
-  matchId: 1234
-  profileId: abcd
-  PlayerMatchId: 0
-  mode: 0
-  reconnectDelay: 5
-  transport: {fileID: 914644865}
-  networkManager: {fileID: 419711492}
---- !u!114 &914644867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 914644862}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6953b5ff232a74ef3a40c43e8c3cb7e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  networkManager: {fileID: 0}
-  webRtcTransportPrefab: {fileID: 0}
-  webSocketTransportPrefab: {fileID: 0}
-  sessionConfig:
-    serverHost: ws://localhost:8080/app/ws/crossfire
-    matchId: 
-    profileId: 
-    sessionToken: 
-    reconnectDelay: 5
-    autoReconnect: 1
-  useWebRTC: 1
 --- !u!1 &971093683
 GameObject:
   m_ObjectHideFlags: 0
@@ -1736,9 +1646,14 @@ MonoBehaviour:
   player1Name: TestPlayer1
   player2Name: TestPlayer2
   elementsRootUrl: http://localhost:8080/api/rest
-  client: {fileID: 2001819802}
+  sessionManager: {fileID: 2001819802}
   testNetworkObject: {fileID: 8793751809119772866, guid: d419c473954684d1581f12811d0e4970,
     type: 3}
+  connectionStatusText: {fileID: 0}
+  connectionQualitySlider: {fileID: 0}
+  playerListParent: {fileID: 0}
+  playerListItemPrefab: {fileID: 0}
+  reconnectingPanel: {fileID: 0}
 --- !u!4 &1794063829
 Transform:
   m_ObjectHideFlags: 0
@@ -1948,7 +1863,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 390511087}
   - {fileID: 419711494}
-  - {fileID: 914644864}
   - {fileID: 1910112133}
   - {fileID: 1454775824}
   - {fileID: 1794063829}

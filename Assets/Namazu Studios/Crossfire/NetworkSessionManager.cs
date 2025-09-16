@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Unity.Netcode;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Elements.Crossfire
@@ -18,9 +19,17 @@ namespace Elements.Crossfire
         [SerializeField] private NetworkSessionConfig sessionConfig;
         [SerializeField] private bool useWebRTC = true;
 
+        public event Action<string> OnMatchJoined;
+        public event Action<string, bool> OnHostChanged; // hostId, wasTransferred
+        public event Action<List<PlayerInfo>> OnPlayerListUpdated;
+        public event Action<PlayerInfo> OnPlayerJoined;
+        public event Action<PlayerInfo, string> OnPlayerLeft; // player, reason
+        public event Action OnAllPlayersConnected;
+        public event Action<string> OnConnectionError;
+
         // Core components
-        private ISignalingClient signalingClient;
-        private INetworkTransportAdapter transportAdapter;
+        public ISignalingClient SignalingClient { get; private set; }
+        public INetworkTransportAdapter TransportAdapter { get; private set; }
 
         // Session state
         private string hostProfileId;
@@ -28,6 +37,10 @@ namespace Elements.Crossfire
         private bool networkStarted;
         private readonly HashSet<string> connectedPeers = new();
         private readonly HashSet<string> pendingPeers = new();
+
+        private Dictionary<string, PlayerInfo> players = new();
+        private string currentHostId;
+        private bool allPlayersConnected;
 
         // Public API
         public void StartSession(string profileId, string sessionToken, string matchId = null)
@@ -37,7 +50,7 @@ namespace Elements.Crossfire
             if (matchId != null) sessionConfig.matchId = matchId;
 
             InitializeComponents();
-            signalingClient.Connect(sessionConfig.serverHost, profileId, sessionToken);
+            SignalingClient.Connect(sessionConfig.serverHost, profileId, sessionToken);
         }
 
         public void JoinMatch(string matchId)
@@ -47,7 +60,7 @@ namespace Elements.Crossfire
             request.setProfileId(sessionConfig.profileId);
             request.setSessionKey(sessionConfig.sessionToken);
 
-            signalingClient.SendWSMessage(request.ToJsonString<JoinHandshakeRequest>());
+            SignalingClient.SendWSMessage(request.ToJsonString<JoinHandshakeRequest>());
         }
 
         public void FindOrCreateMatch(string configurationName)
@@ -57,42 +70,52 @@ namespace Elements.Crossfire
             request.setSessionKey(sessionConfig.sessionToken);
             request.setConfiguration(configurationName);
 
-            signalingClient.SendWSMessage(request.ToJsonString<FindHandshakeRequest>());
+            SignalingClient.SendWSMessage(request.ToJsonString<FindHandshakeRequest>());
         }
 
         // Initialization
         private void InitializeComponents()
         {
             // Create signaling client
-            signalingClient = gameObject.AddComponent<WebSocketSignalingClient>();
-            signalingClient.OnConnected += HandleSignalingConnected;
-            signalingClient.OnMessageReceived += HandleSignalingMessage;
-            signalingClient.OnDisconnected += HandleSignalingDisconnected;
+            SignalingClient = gameObject.AddComponent<WebSocketSignalingClient>();
+            SignalingClient.OnConnected += HandleSignalingConnected;
+            SignalingClient.OnMessageReceived += HandleSignalingMessage;
+            SignalingClient.OnDisconnected += HandleSignalingDisconnected;
+
+            SignalingClient.OnSignalingError += (error) => OnConnectionError?.Invoke(error);
+            SignalingClient.OnReconnectAttempt += (attempt) => Debug.Log($"[SessionManager] Reconnect attempt {attempt}");
 
             // Create transport adapter based on configuration
             GameObject transportGO;
             if (useWebRTC)
             {
                 transportGO = Instantiate(webRtcTransportPrefab, transform);
-                transportAdapter = transportGO.GetComponent<WebRtcTransportAdapter>();
+                TransportAdapter = transportGO.GetComponent<WebRtcTransportAdapter>();
 
                 // Pass signaling client reference to WebRTC adapter for outbound messages
-                var webRtcAdapter = transportAdapter as WebRtcTransportAdapter;
-                webRtcAdapter.SetSignalingClient(signalingClient, sessionConfig.profileId);
+                var webRtcAdapter = TransportAdapter as WebRtcTransportAdapter;
+                webRtcAdapter.SetSignalingClient(SignalingClient, sessionConfig.profileId);
             }
             else
             {
                 // Future: WebSocket-only transport
                 transportGO = Instantiate(webSocketTransportPrefab, transform);
-                transportAdapter = transportGO.GetComponent<INetworkTransportAdapter>();
+                TransportAdapter = transportGO.GetComponent<INetworkTransportAdapter>();
             }
 
             // Initialize adapter and assign transport to NetworkManager
-            transportAdapter.Initialize(networkManager);
+            TransportAdapter.Initialize(networkManager);
 
             // Subscribe to transport events
-            transportAdapter.OnPeerReady += HandlePeerReady;
-            transportAdapter.OnPeerDisconnected += HandlePeerDisconnected;
+            TransportAdapter.OnPeerReady += HandlePeerReady;
+            TransportAdapter.OnPeerDisconnected += HandlePeerDisconnected;
+            TransportAdapter.OnConnectionQualityChanged += HandleConnectionQualityChanged;
+            TransportAdapter.OnConnectionStateChanged += HandleConnectionStateChanged;
+            TransportAdapter.OnConnectionError += (peerId, error) =>
+            {
+                Debug.LogError($"[SessionManager] Connection error with {peerId}: {error}");
+                OnConnectionError?.Invoke($"Connection error with {peerId}: {error}");
+            };
         }
 
         // Signaling event handlers
@@ -127,7 +150,7 @@ namespace Elements.Crossfire
                 case MessageType.SDP_OFFER:
                 case MessageType.SDP_ANSWER:
                 case MessageType.CANDIDATE:
-                    transportAdapter.HandleSignalingMessage(message.type, message.profileId, message.payload);
+                    TransportAdapter.HandleSignalingMessage(message.type, message.profileId, message.payload);
                     break;
 
                 case MessageType.DISCONNECT:
@@ -138,23 +161,36 @@ namespace Elements.Crossfire
 
         private void HandleHostMessage(SignalingMessage message)
         {
-            hostProfileId = message.profileId;
+            string oldHostId = currentHostId;
+            currentHostId = message.profileId;
+
+            bool wasTransferred = !string.IsNullOrEmpty(oldHostId) && oldHostId != currentHostId;
+
+            hostProfileId = currentHostId;
             isHost = (hostProfileId == sessionConfig.profileId);
 
-            Debug.Log($"[SessionManager] Host identified: {hostProfileId}, I am host: {isHost}");
+            // Update host in player list
+            foreach (var player in players.Values)
+            {
+                player.isHost = (player.profileId == currentHostId);
+            }
 
-            // Connect to host if we're a client
+            OnHostChanged?.Invoke(currentHostId, wasTransferred);
+
+            UpdatePlayerList();
+
+            Debug.Log($"[SessionManager] Host {(wasTransferred ? "transferred to" : "is")}: {currentHostId}");
+
+            // Existing connection logic...
             if (!isHost)
             {
                 BeginConnectionWithPeer(hostProfileId);
             }
 
-            // Process any pending peers
             foreach (var peerId in pendingPeers)
             {
                 BeginConnectionWithPeer(peerId);
             }
-
             pendingPeers.Clear();
         }
 
@@ -162,10 +198,12 @@ namespace Elements.Crossfire
         {
             sessionConfig.matchId = message.matchId;
 
-            if (transportAdapter is WebRtcTransportAdapter webRtcAdapter)
+            if (TransportAdapter is WebRtcTransportAdapter webRtcAdapter)
             {
                 webRtcAdapter.SetMatchId(sessionConfig.matchId);
             }
+
+            OnMatchJoined?.Invoke(sessionConfig.matchId);
 
             Debug.Log($"[SessionManager] Matched to: {sessionConfig.matchId}");
         }
@@ -174,11 +212,26 @@ namespace Elements.Crossfire
         {
             var remoteProfileId = message.profileId;
 
-            // Skip self
             if (remoteProfileId == sessionConfig.profileId)
                 return;
 
-            // If host unknown and this is not the host, queue for later
+            // Add or update player info
+            if (!players.TryGetValue(remoteProfileId, out var playerInfo))
+            {
+                playerInfo = new PlayerInfo
+                {
+                    profileId = remoteProfileId,                    
+                    isHost = (remoteProfileId == currentHostId),
+                    connectionState = ConnectionState.Connecting,
+                    connectionQuality = ConnectionQuality.Undetermined
+                };
+
+                players[remoteProfileId] = playerInfo;
+            }
+
+            UpdatePlayerList();
+
+            // Existing connection logic...
             if (hostProfileId == null && remoteProfileId != hostProfileId)
             {
                 pendingPeers.Add(remoteProfileId);
@@ -194,8 +247,43 @@ namespace Elements.Crossfire
 
             if (connectedPeers.Remove(remoteProfileId))
             {
-                transportAdapter.DisconnectPeer(remoteProfileId);
+                TransportAdapter.DisconnectPeer(remoteProfileId);
+
                 Debug.Log($"[SessionManager] Peer disconnected: {remoteProfileId}");
+            }
+        }
+
+        private void HandleConnectionQualityChanged(string peerId, ConnectionQuality quality)
+        {
+            if (players.TryGetValue(peerId, out var player))
+            {
+                player.connectionQuality = quality;
+                UpdatePlayerList();
+            }
+        }
+
+        private void HandleConnectionStateChanged(string peerId, ConnectionState state)
+        {
+            if (players.TryGetValue(peerId, out var player))
+            {
+                var oldState = player.connectionState;
+                player.connectionState = state;
+
+                // Trigger events based on state changes
+                if (oldState != ConnectionState.Connected && state == ConnectionState.Connected)
+                {
+                    OnPlayerJoined?.Invoke(player);
+
+                    CheckAllPlayersConnected();
+                }
+                else if (oldState == ConnectionState.Connected && state != ConnectionState.Connected)
+                {
+                    string reason = state == ConnectionState.Failed ? "Connection failed" : "Disconnected";
+
+                    OnPlayerLeft?.Invoke(player, reason);
+                }
+
+                UpdatePlayerList();
             }
         }
 
@@ -211,7 +299,7 @@ namespace Elements.Crossfire
             connectedPeers.Add(remoteProfileId);
 
             bool shouldOffer = DetermineIfShouldOffer(remoteProfileId);
-            transportAdapter.BeginConnection(remoteProfileId, shouldOffer);
+            TransportAdapter.BeginConnection(remoteProfileId, shouldOffer);
 
             Debug.Log($"[SessionManager] Beginning connection with {remoteProfileId}, offering: {shouldOffer}");
         }
@@ -256,7 +344,7 @@ namespace Elements.Crossfire
             {
                 Debug.Log("[SessionManager] Starting as Client");
                 // Set server peer for transport
-                if (transportAdapter is WebRtcTransportAdapter webRtcAdapter)
+                if (TransportAdapter is WebRtcTransportAdapter webRtcAdapter)
                 {
                     var serverNgoId = NetworkIdMapper.DeterministicClientId(hostProfileId, sessionConfig.matchId);
                     webRtcAdapter.GetComponent<WebRtcTransport>().SetServerClientId(serverNgoId);
@@ -268,6 +356,25 @@ namespace Elements.Crossfire
             networkStarted = true;
         }
 
+        private void CheckAllPlayersConnected()
+        {
+            bool allConnected = players.Values.All(p => p.connectionState == ConnectionState.Connected);
+            if (allConnected && !allPlayersConnected)
+            {
+                allPlayersConnected = true;
+                OnAllPlayersConnected?.Invoke();
+            }
+            else if (!allConnected && allPlayersConnected)
+            {
+                allPlayersConnected = false;
+            }
+        }
+
+        private void UpdatePlayerList()
+        {
+            OnPlayerListUpdated?.Invoke(players.Values.ToList());
+        }
+
         private void OnDestroy()
         {
             if (networkStarted)
@@ -275,14 +382,14 @@ namespace Elements.Crossfire
                 networkManager.Shutdown();
             }
 
-            transportAdapter?.Shutdown();
+            TransportAdapter?.Shutdown();
 
-            if (signalingClient != null)
+            if (SignalingClient != null)
             {
-                signalingClient.OnConnected -= HandleSignalingConnected;
-                signalingClient.OnMessageReceived -= HandleSignalingMessage;
-                signalingClient.OnDisconnected -= HandleSignalingDisconnected;
-                signalingClient.Disconnect();
+                SignalingClient.OnConnected -= HandleSignalingConnected;
+                SignalingClient.OnMessageReceived -= HandleSignalingMessage;
+                SignalingClient.OnDisconnected -= HandleSignalingDisconnected;
+                SignalingClient.Disconnect();
             }
         }
     }

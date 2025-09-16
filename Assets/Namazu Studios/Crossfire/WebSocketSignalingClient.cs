@@ -14,6 +14,9 @@ namespace Elements.Crossfire
         public event Action OnConnected;
         public event Action<SignalingMessage> OnMessageReceived;
         public event Action OnDisconnected;
+        public event Action<int> OnReconnectAttempt;
+        public event Action<float> OnReconnectCountdown;
+        public event Action<string> OnSignalingError;
 
         public bool IsConnected => ws?.IsAlive ?? false;
 
@@ -22,6 +25,9 @@ namespace Elements.Crossfire
         private bool intentionalClose;
         private readonly ConcurrentQueue<Action> mainThreadQueue = new();
         private readonly ConcurrentQueue<string> outboundQueue = new();
+
+        private int reconnectAttempts = 0;
+        private Coroutine reconnectCoroutine;
 
         private void Update()
         {
@@ -44,13 +50,14 @@ namespace Elements.Crossfire
         private void DoConnect()
         {
             string url = $"{config.serverHost}/match";
-            Debug.Log($"[SignalingClient] Connecting to {url}");
+            Debug.Log($"[SignalingClient] Connecting to {url} (attempt {reconnectAttempts + 1})");
 
             ws = new WebSocket(url);
 
             ws.OnOpen += (s, e) =>
             {
                 Debug.Log($"[SignalingClient] Connected");
+                reconnectAttempts = 0; // Reset on successful connection
                 FlushOutboundQueue();
                 mainThreadQueue.Enqueue(() => OnConnected?.Invoke());
             };
@@ -62,7 +69,9 @@ namespace Elements.Crossfire
 
             ws.OnError += (s, e) =>
             {
-                Debug.LogError($"[SignalingClient] Error: {e.Message}");
+                string errorMsg = $"WebSocket error: {e.Message}";
+                Debug.LogError($"[SignalingClient] {errorMsg}");
+                mainThreadQueue.Enqueue(() => OnSignalingError?.Invoke(errorMsg));
             };
 
             ws.OnClose += (s, e) =>
@@ -72,13 +81,13 @@ namespace Elements.Crossfire
 
                 if (!intentionalClose && config.autoReconnect)
                 {
-                    StartCoroutine(Reconnect());
+                    reconnectCoroutine = StartCoroutine(Reconnect());
                 }
             };
 
-            ws.ConnectAsync();
+            ws.ConnectAsync(); ;
         }
-
+        
         private void ProcessMessage(string raw)
         {
             try
@@ -135,17 +144,39 @@ namespace Elements.Crossfire
             }
         }
 
+        private IEnumerator Reconnect()
+        {
+            reconnectAttempts++;
+            OnReconnectAttempt?.Invoke(reconnectAttempts);
+
+            float countdown = config.reconnectDelay;
+            while (countdown > 0)
+            {
+                OnReconnectCountdown?.Invoke(countdown);
+                yield return new WaitForSeconds(1f);
+                countdown -= 1f;
+            }
+
+            try
+            {
+                DoConnect();
+            }
+            catch (Exception e)
+            {
+                OnSignalingError?.Invoke($"Reconnect failed: {e.Message}");
+
+                if (reconnectAttempts < 5) // Max retries
+                {
+                    reconnectCoroutine = StartCoroutine(Reconnect());
+                }
+            }
+        }
+
         public void Disconnect()
         {
             intentionalClose = true;
             ws?.Close();
-        }
-
-        private IEnumerator Reconnect()
-        {
-            yield return new WaitForSeconds(config.reconnectDelay);
-            DoConnect();
-        }
+        }       
 
         private void OnDestroy()
         {

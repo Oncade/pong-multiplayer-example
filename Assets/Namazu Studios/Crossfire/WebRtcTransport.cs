@@ -8,11 +8,13 @@ using UnityEngine;
 
 namespace Elements.Crossfire
 {
+    using Model;
+
     /// <summary>
-    /// NGO transport over Unity.WebRTC (data channels only).
+    /// Enhanced NGO transport over Unity.WebRTC with stats tracking.
     /// Requires an external signaling layer to exchange SDP/ICE.
     /// </summary>
-    public class WebRtcTransport : NetworkTransport
+    public class WebRtcTransport : NetworkTransport, IWebRtcTransportStats
     {
         public enum Mode
         {
@@ -23,18 +25,32 @@ namespace Elements.Crossfire
         [SerializeField]
         private Mode mode = Mode.REMOTE;
 
+        [Header("Stats Configuration")]
+        [SerializeField] private bool enableStatsCollection = true;
+        [SerializeField] private float statsUpdateInterval = 1f;
+
         public event Action<ulong, RTCSessionDescription> OnSendOffer;
         public event Action<ulong, RTCSessionDescription> OnSendAnswer;
         public event Action<ulong, RTCIceCandidate> OnSendIce;
-        public event Action<ulong, RTCIceConnectionState> OnPeerConnectionStateChanged; // now only fired once peer is READY
+        public event Action<ulong, RTCIceConnectionState> OnPeerConnectionStateChanged;
         public event Action<ulong> OnDataChannelReady;
+
+        // NEW: Stats events
+        public event Action<ulong, ParsedWebRTCStats> OnStatsUpdated;
 
         private readonly Queue<(NetworkEvent ev, ulong clientId, ArraySegment<byte> payload, float receiveTime)> events = new();
 
         private readonly Dictionary<ulong, RTCPeerConnection> peerConnections = new();
         private readonly Dictionary<ulong, RTCDataChannel> dataChannels = new();
+        private readonly HashSet<ulong> readyPeers = new();
 
-        private readonly HashSet<ulong> readyPeers = new(); // tracks peers that have reached "ready"
+        // NEW: Stats tracking
+        private readonly Dictionary<ulong, ParsedWebRTCStats> parsedStats = new();
+        private readonly Dictionary<ulong, DateTime> lastStatsUpdate = new();
+        private readonly Dictionary<ulong, float> measuredLatencies = new();
+        private readonly Dictionary<ulong, long> lastBytesReceived = new();
+        private readonly Dictionary<ulong, long> lastBytesSent = new();
+        private Coroutine statsUpdateCoroutine;
 
         private ulong serverPeerId;
 
@@ -55,6 +71,12 @@ namespace Elements.Crossfire
         {
             Debug.Log("Initializing WebRTC");
             initialized = true;
+
+            // NEW: Start stats collection
+            if (enableStatsCollection)
+            {
+                StartStatsCollection();
+            }
         }
 
         public override bool StartClient()
@@ -73,6 +95,9 @@ namespace Elements.Crossfire
         {
             Debug.Log("Shutting Down WebRTC");
 
+            // NEW: Stop stats collection
+            StopStatsCollection();
+
             foreach (var dataChannel in dataChannels.Values)
                 dataChannel.Close();
 
@@ -82,6 +107,9 @@ namespace Elements.Crossfire
             peerConnections.Clear();
             dataChannels.Clear();
             readyPeers.Clear();
+
+            // NEW: Clear stats
+            ClearStatsData();
         }
 
         public override void DisconnectRemoteClient(ulong clientId)
@@ -95,6 +123,10 @@ namespace Elements.Crossfire
                 peerConnection.Close();
 
             readyPeers.Remove(clientId);
+
+            // NEW: Clean up stats for disconnected peer
+            CleanupPeerStats(clientId);
+
             Enqueue(NetworkEvent.Disconnect, clientId, default);
         }
 
@@ -106,7 +138,15 @@ namespace Elements.Crossfire
                 DisconnectRemoteClient(serverPeerId);
         }
 
-        public override ulong GetCurrentRtt(ulong clientId) => 0;
+        public override ulong GetCurrentRtt(ulong clientId)
+        {
+            // NEW: Return actual measured latency if available
+            if (measuredLatencies.TryGetValue(clientId, out var latency))
+            {
+                return (ulong)latency;
+            }
+            return 0;
+        }
 
         public override NetworkEvent PollEvent(out ulong clientId, out ArraySegment<byte> payload, out float receiveTime)
         {
@@ -135,7 +175,7 @@ namespace Elements.Crossfire
                 return;
             }
 
-            Debug.Log($"[Transport.Send] to={clientId} len={payload.Count}");
+            //Debug.Log($"[Transport.Send] to={clientId} len={payload.Count}");
 
             if (clientId == 0)
             {
@@ -197,7 +237,6 @@ namespace Elements.Crossfire
             StartCoroutine(RespondToOffer(pc, remoteId, offer));
         }
 
-
         public void OnRemoteAnswer(ulong remoteId, RTCSessionDescription answer)
         {
             if (peerConnections.TryGetValue(remoteId, out var pc))
@@ -251,6 +290,7 @@ namespace Elements.Crossfire
                 Debug.Log($"[Transport] DataChannel closed for {remoteId}");
                 dataChannels.Remove(remoteId);
                 readyPeers.Remove(remoteId);
+                CleanupPeerStats(remoteId); // NEW: Clean up stats
                 Enqueue(NetworkEvent.Disconnect, remoteId, default);
             };
 
@@ -258,14 +298,12 @@ namespace Elements.Crossfire
             {
                 Debug.Log($"[Transport] DataChannel open for {remoteId}");
 
-            // Mark peer ready
-            TryMarkPeerReady(remoteId);
+                // Mark peer ready
+                TryMarkPeerReady(remoteId);
 
-            // Tell CrossfireClient that a channel is ready.
-            // CrossfireClient will ensure NGO is started first.
-            OnDataChannelReady?.Invoke(remoteId);
+                // Tell CrossfireClient that a channel is ready.
+                OnDataChannelReady?.Invoke(remoteId);
                 OnPeerConnectionStateChanged?.Invoke(remoteId, RTCIceConnectionState.Completed);
-
             };
 
             if (channel.ReadyState == RTCDataChannelState.Open)
@@ -296,6 +334,189 @@ namespace Elements.Crossfire
             }
 
             return false;
+        }
+
+        // ---- NEW: Stats Collection Methods ----
+
+        public void StartStatsCollection()
+        {
+            if (statsUpdateCoroutine == null && enableStatsCollection)
+            {
+                statsUpdateCoroutine = StartCoroutine(UpdateWebRTCStats());
+                Debug.Log("[WebRtcTransport] Started stats collection");
+            }
+        }
+
+        public void StopStatsCollection()
+        {
+            if (statsUpdateCoroutine != null)
+            {
+                StopCoroutine(statsUpdateCoroutine);
+                statsUpdateCoroutine = null;
+                Debug.Log("[WebRtcTransport] Stopped stats collection");
+            }
+        }
+
+        private IEnumerator UpdateWebRTCStats()
+        {
+            while (true)
+            {
+                // Update stats for all connected peers
+                var connectedClients = readyPeers.ToList();
+                foreach (var clientId in connectedClients)
+                {
+                    if (peerConnections.ContainsKey(clientId))
+                    {
+                        yield return StartCoroutine(UpdatePeerStatsCoroutine(clientId));
+                    }
+                }
+
+                yield return new WaitForSeconds(statsUpdateInterval);
+            }
+        }
+
+        private IEnumerator UpdatePeerStatsCoroutine(ulong clientId)
+        {
+            if (peerConnections.TryGetValue(clientId, out var peerConnection))
+            {
+                var statsOp = peerConnection.GetStats();
+                yield return statsOp;
+
+                if (!statsOp.IsError && statsOp.Value != null)
+                {
+                    var parsed = ParseRTCStats(statsOp.Value);
+                    parsedStats[clientId] = parsed;
+                    lastStatsUpdate[clientId] = DateTime.Now;
+
+                    // Update cached values for quick access
+                    measuredLatencies[clientId] = parsed.currentRoundTripTime * 1000f; // Convert to ms
+                    lastBytesReceived[clientId] = parsed.bytesReceived;
+                    lastBytesSent[clientId] = parsed.bytesSent;
+
+                    // Fire event for external listeners
+                    OnStatsUpdated?.Invoke(clientId, parsed);
+                }
+                else if (statsOp.IsError)
+                {
+                    Debug.LogWarning($"[WebRtcTransport] Failed to get stats for client {clientId}: {statsOp.Error.message}");
+                }
+            }
+        }
+
+        private ParsedWebRTCStats ParseRTCStats(RTCStatsReport statsReport)
+        {
+            var parsed = new ParsedWebRTCStats
+            {
+                timestamp = DateTime.Now
+            };
+
+            // Parse the stats report
+            foreach (var statsPair in statsReport.Stats)
+            {
+                var stats = statsPair.Value;
+
+                // Extract RTT from candidate pair stats
+                if (stats.Type == RTCStatsType.CandidatePair)
+                {
+                    if (stats.Dict.TryGetValue("state", out var state) && state.ToString() == "succeeded")
+                    {
+                        if (stats.Dict.TryGetValue("currentRoundTripTime", out var rtt))
+                        {
+                            parsed.currentRoundTripTime = Convert.ToSingle(rtt);
+                            parsed.candidatePairState = state.ToString();
+                        }
+                    }
+                }
+                // Extract packet loss and bytes from inbound RTP
+                else if (stats.Type == RTCStatsType.InboundRtp)
+                {
+                    if (stats.Dict.TryGetValue("packetsLost", out var packetsLost))
+                        parsed.packetsLost += Convert.ToInt64(packetsLost);
+
+                    if (stats.Dict.TryGetValue("packetsReceived", out var packetsReceived))
+                        parsed.packetsReceived += Convert.ToInt64(packetsReceived);
+
+                    if (stats.Dict.TryGetValue("bytesReceived", out var bytesReceived))
+                        parsed.bytesReceived += Convert.ToInt64(bytesReceived);
+                }
+                // Extract bytes sent from outbound RTP
+                else if (stats.Type == RTCStatsType.OutboundRtp)
+                {
+                    if (stats.Dict.TryGetValue("bytesSent", out var bytesSent))
+                        parsed.bytesSent += Convert.ToInt64(bytesSent);
+                }
+            }
+
+            return parsed;
+        }
+
+        private void CleanupPeerStats(ulong clientId)
+        {
+            parsedStats.Remove(clientId);
+            lastStatsUpdate.Remove(clientId);
+            measuredLatencies.Remove(clientId);
+            lastBytesReceived.Remove(clientId);
+            lastBytesSent.Remove(clientId);
+        }
+
+        private void ClearStatsData()
+        {
+            parsedStats.Clear();
+            lastStatsUpdate.Clear();
+            measuredLatencies.Clear();
+            lastBytesReceived.Clear();
+            lastBytesSent.Clear();
+        }
+
+        // ---- NEW: IWebRtcTransportStats Implementation ----
+
+        public float GetPeerLatency(ulong clientId)
+        {
+            if (measuredLatencies.TryGetValue(clientId, out var latency))
+            {
+                return latency;
+            }
+
+            // Fallback based on connection state
+            return readyPeers.Contains(clientId) ? 50f : 999f;
+        }
+
+        public float GetPeerPacketLoss(ulong clientId)
+        {
+            if (parsedStats.TryGetValue(clientId, out var stats))
+            {
+                var totalPackets = stats.packetsLost + stats.packetsReceived;
+                if (totalPackets > 0)
+                {
+                    return (float)stats.packetsLost / totalPackets;
+                }
+            }
+
+            return 0f;
+        }
+
+        public long GetBytesReceived(ulong clientId)
+        {
+            return lastBytesReceived.TryGetValue(clientId, out var bytes) ? bytes : 0;
+        }
+
+        public long GetBytesSent(ulong clientId)
+        {
+            return lastBytesSent.TryGetValue(clientId, out var bytes) ? bytes : 0;
+        }
+
+        public RTCStatsReportAsyncOperation GetRTCStatsAsync(ulong clientId)
+        {
+            if (peerConnections.TryGetValue(clientId, out var peerConnection))
+            {
+                return peerConnection.GetStats();
+            }
+            return null;
+        }
+
+        public ParsedWebRTCStats GetParsedStats(ulong clientId)
+        {
+            return parsedStats.TryGetValue(clientId, out var stats) ? stats : default;
         }
 
         // ---- Coroutines ----

@@ -2,6 +2,7 @@
 using Unity.Netcode;
 using Unity.WebRTC;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
@@ -13,8 +14,21 @@ namespace Elements.Crossfire
     {
         public event Action<string> OnPeerReady;
         public event Action<string> OnPeerDisconnected;
+        public event Action<string, ConnectionQuality> OnConnectionQualityChanged;
+        public event Action<string, NetworkStats> OnNetworkStatsUpdated;
+        public event Action<string, string> OnConnectionError;
+        public event Action<string, ConnectionState> OnConnectionStateChanged;
 
         [SerializeField] private WebRtcTransport transport;
+        [SerializeField] private float statsUpdateInterval = 2f;
+        [SerializeField] private float qualityCheckInterval = 1f;
+
+        private Dictionary<string, NetworkStats> peerStats = new();
+        private Dictionary<string, ConnectionQuality> peerQualities = new();
+        private Dictionary<string, ConnectionState> peerStates = new();
+        private Dictionary<string, DateTime> lastStatsUpdate = new();
+        private Coroutine statsUpdateCoroutine;
+        private Coroutine qualityMonitorCoroutine;
 
         private Dictionary<string, ulong> profileToNgoId = new();
         private Dictionary<ulong, string> ngoIdToProfile = new();
@@ -39,6 +53,11 @@ namespace Elements.Crossfire
             transport.OnSendOffer += HandleSendOffer;
             transport.OnSendAnswer += HandleSendAnswer;
             transport.OnSendIce += HandleSendIce;
+
+            transport.OnStatsUpdated += HandleStatsUpdated;
+            transport.StartStatsCollection();
+            statsUpdateCoroutine = StartCoroutine(UpdateNetworkStats());            
+            qualityMonitorCoroutine = StartCoroutine(MonitorConnectionQuality());
         }
 
         public void SetSignalingClient(ISignalingClient client, string profileId)
@@ -112,7 +131,18 @@ namespace Elements.Crossfire
 
         public void Shutdown()
         {
-            // Unsubscribe from events
+            if (statsUpdateCoroutine != null)
+            {
+                StopCoroutine(statsUpdateCoroutine);
+                statsUpdateCoroutine = null;
+            }
+
+            if (qualityMonitorCoroutine != null)
+            {
+                StopCoroutine(qualityMonitorCoroutine);
+                qualityMonitorCoroutine = null;
+            }
+
             if (transport != null)
             {
                 transport.OnDataChannelReady -= HandleDataChannelReady;
@@ -120,11 +150,99 @@ namespace Elements.Crossfire
                 transport.OnSendOffer -= HandleSendOffer;
                 transport.OnSendAnswer -= HandleSendAnswer;
                 transport.OnSendIce -= HandleSendIce;
+                transport.OnStatsUpdated -= HandleStatsUpdated;
             }
 
             transport.Shutdown();
             profileToNgoId.Clear();
             ngoIdToProfile.Clear();
+            peerStats.Clear();
+            peerQualities.Clear();
+            peerStates.Clear();
+            lastStatsUpdate.Clear();
+        }
+
+        public NetworkStats GetNetworkStats(string peerId)
+        {
+            return peerStats.TryGetValue(peerId, out var stats) ? stats : default;
+        }
+
+        public ConnectionQuality GetConnectionQuality(string peerId)
+        {
+            return peerQualities.TryGetValue(peerId, out var quality) ? quality : ConnectionQuality.Poor;
+        }
+
+        private IEnumerator UpdateNetworkStats()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(statsUpdateInterval);
+
+                foreach (var kvp in profileToNgoId)
+                {
+                    string profileId = kvp.Key;
+                    ulong ngoId = kvp.Value;
+
+                    if (transport.IsPeerReady(ngoId))
+                    {
+                        UpdatePeerStats(profileId, ngoId);
+                    }
+                }
+            }
+        }
+
+        private IEnumerator MonitorConnectionQuality()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(qualityCheckInterval);
+            
+                foreach (var kvp in profileToNgoId)
+                {
+                    string profileId = kvp.Key;
+                    ulong ngoId = kvp.Value;
+                
+                    if (transport.IsPeerReady(ngoId))
+                    {
+                        CheckForConnectionIssues(profileId, ngoId);
+                    }
+                }
+            }
+        }
+
+        private void UpdatePeerStats(string profileId, ulong ngoId)
+        {
+            // Get stats from WebRTC transport
+            var newStats = new NetworkStats
+            {
+                latency = transport.GetPeerLatency(ngoId),
+                packetLoss = transport.GetPeerPacketLoss(ngoId),
+                bytesReceived = transport.GetBytesReceived(ngoId),
+                bytesSent = transport.GetBytesSent(ngoId),
+                lastUpdated = DateTime.Now
+            };
+
+            peerStats[profileId] = newStats;
+            OnNetworkStatsUpdated?.Invoke(profileId, newStats);
+
+            // Update connection quality based on stats
+            var newQuality = CalculateConnectionQuality(newStats);
+            if (!peerQualities.TryGetValue(profileId, out var oldQuality) || oldQuality != newQuality)
+            {
+                peerQualities[profileId] = newQuality;
+                OnConnectionQualityChanged?.Invoke(profileId, newQuality);
+            }
+        }
+
+        private ConnectionQuality CalculateConnectionQuality(NetworkStats stats)
+        {
+            if (stats.latency > 200f || stats.packetLoss > 0.05f)
+                return ConnectionQuality.Poor;
+            if (stats.latency > 100f || stats.packetLoss > 0.02f)
+                return ConnectionQuality.Fair;
+            if (stats.latency > 50f || stats.packetLoss > 0.01f)
+                return ConnectionQuality.Good;
+            return ConnectionQuality.Excellent;
         }
 
         private ulong GetOrCreateNgoId(string profileId)
@@ -216,12 +334,93 @@ namespace Elements.Crossfire
 
         private void HandlePeerStateChanged(ulong ngoId, RTCIceConnectionState state)
         {
-            if (state == RTCIceConnectionState.Failed ||
-                state == RTCIceConnectionState.Disconnected)
+            if (ngoIdToProfile.TryGetValue(ngoId, out var profileId))
             {
-                if (ngoIdToProfile.TryGetValue(ngoId, out var profileId))
+                ConnectionState newState = state switch
+                {
+                    RTCIceConnectionState.New => ConnectionState.Connecting,
+                    RTCIceConnectionState.Checking => ConnectionState.Connecting,
+                    RTCIceConnectionState.Completed => ConnectionState.Connected,
+                    RTCIceConnectionState.Connected => ConnectionState.Connected,
+                    RTCIceConnectionState.Disconnected => ConnectionState.Reconnecting,
+                    RTCIceConnectionState.Failed => ConnectionState.Failed,
+                    _ => ConnectionState.Disconnected
+                };
+
+                if (!peerStates.TryGetValue(profileId, out var oldState) || oldState != newState)
+                {
+                    peerStates[profileId] = newState;
+                    OnConnectionStateChanged?.Invoke(profileId, newState);
+                }
+
+                // Existing disconnect logic
+                if (state == RTCIceConnectionState.Failed ||
+                    state == RTCIceConnectionState.Disconnected)
                 {
                     OnPeerDisconnected?.Invoke(profileId);
+                }
+            }
+        }
+
+        private void HandleStatsUpdated(ulong clientId, ParsedWebRTCStats webRtcStats)
+        {
+            if (ngoIdToProfile.TryGetValue(clientId, out var profileId))
+            {
+                // Convert WebRTC stats to our NetworkStats format
+                var networkStats = new NetworkStats
+                {
+                    latency = webRtcStats.GetLatencyMs(),
+                    packetLoss = webRtcStats.GetPacketLossRatio(),
+                    bytesReceived = webRtcStats.bytesReceived,
+                    bytesSent = webRtcStats.bytesSent,
+                    lastUpdated = webRtcStats.timestamp
+                };
+
+                peerStats[profileId] = networkStats;
+                OnNetworkStatsUpdated?.Invoke(profileId, networkStats);
+
+                // Update connection quality
+                var newQuality = CalculateConnectionQuality(networkStats);
+                if (!peerQualities.TryGetValue(profileId, out var oldQuality) || oldQuality != newQuality)
+                {
+                    peerQualities[profileId] = newQuality;
+                    OnConnectionQualityChanged?.Invoke(profileId, newQuality);
+
+                    // Fire connection error event for very poor quality
+                    if (newQuality == ConnectionQuality.Poor && oldQuality != ConnectionQuality.Poor)
+                    {
+                        OnConnectionError?.Invoke(profileId, $"Connection quality degraded to Poor (latency: {networkStats.latency:F0}ms, packet loss: {networkStats.packetLoss * 100:F1}%)");
+                    }
+                }
+            }
+        }
+
+        private void CheckForConnectionIssues(string profileId, ulong ngoId)
+        {
+            if (transport is IWebRtcTransportStats statsProvider)
+            {
+                var latency = statsProvider.GetPeerLatency(ngoId);
+                var packetLoss = statsProvider.GetPeerPacketLoss(ngoId);
+
+                // Check for severe connection issues
+                if (latency > 500f)
+                {
+                    OnConnectionError?.Invoke(profileId, $"High latency detected: {latency:F0}ms");
+                }
+
+                if (packetLoss > 0.1f) // More than 10% packet loss
+                {
+                    OnConnectionError?.Invoke(profileId, $"High packet loss detected: {packetLoss * 100:F1}%");
+                }
+
+                // Check for connection timeout (no stats update in a while)
+                if (lastStatsUpdate.TryGetValue(profileId, out var lastUpdate))
+                {
+                    var timeSinceUpdate = DateTime.Now - lastUpdate;
+                    if (timeSinceUpdate.TotalSeconds > statsUpdateInterval * 3) // 3x the normal interval
+                    {
+                        OnConnectionError?.Invoke(profileId, $"Stats update timeout: {timeSinceUpdate.TotalSeconds:F1}s since last update");
+                    }
                 }
             }
         }

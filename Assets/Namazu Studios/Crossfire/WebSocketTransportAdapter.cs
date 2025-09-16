@@ -15,6 +15,10 @@ namespace Elements.Crossfire
     {
         public event Action<string> OnPeerReady;
         public event Action<string> OnPeerDisconnected;
+        public event Action<string, ConnectionQuality> OnConnectionQualityChanged;
+        public event Action<string, NetworkStats> OnNetworkStatsUpdated;
+        public event Action<string, string> OnConnectionError;
+        public event Action<string, ConnectionState> OnConnectionStateChanged;
 
         [SerializeField] private NetworkTransport webSocketTransport; // Your custom WebSocket NetworkTransport        
 
@@ -23,6 +27,12 @@ namespace Elements.Crossfire
             // Initialize WebSocket-based transport
             Debug.Log("[WebSocketTransport] Initializing");
             networkManager.NetworkConfig.NetworkTransport = webSocketTransport;
+
+            //Temp - just removing warnings by adding implementations
+            OnConnectionQualityChanged?.Invoke("", ConnectionQuality.Excellent);
+            OnNetworkStatsUpdated?.Invoke("", new());
+            OnConnectionError?.Invoke("", "");
+            OnConnectionStateChanged("", ConnectionState.Connected);
         }
 
         public void BeginConnection(string peerId, bool isOfferer)
@@ -61,6 +71,16 @@ namespace Elements.Crossfire
         public void Shutdown()
         {
             Debug.Log("[WebSocketTransport] Shutting down");
+        }
+
+        public NetworkStats GetNetworkStats(string peerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ConnectionQuality GetConnectionQuality(string peerId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
