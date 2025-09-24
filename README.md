@@ -128,20 +128,26 @@ The project is designed to let the host player login manually, while a cloned in
 
 ```mermaid
 flowchart TD
-    A[Main Project (Host Player)] -- "Manual login / signup" --> B[Fetch Profile]
-    C[Cloned Project (CPU Player)] -- "Auto login as CPU" --> D[Ensure Profile Exists]
+    A[Main Project (Host Player)]
+    B[Fetch Profile]
+    C[Cloned Project (CPU Player)]
+    D[Ensure Profile Exists]
+    E[Matchmaking (Elements + Crossfire)]
+    F[WebRTC P2P Connection via Unity Netcode]
+    G[PongMulti Scene]
+    H[NetworkObjects auto-spawned (ball, paddles)]
+    I[Ownership assigned: Host & CPU paddles]
+    J[Gameplay begins: ball movement, scoring, UI updates via NetworkVariables]
+    K[NGO Gotchas: Pre-placed objects auto-spawn, assign ownership with ChangeOwnership, NetworkVariables in OnNetworkSpawn, UI via OnValueChanged]
 
-    B --> E[Matchmaking (Elements + Crossfire)]
+    A --> B
+    C --> D
+    B --> E
     D --> E
-
-    E --> F[WebRTC P2P Connection via Unity Netcode]
-
-    F --> G[PongMulti Scene]
-    G --> H[NetworkObjects auto-spawned (ball, paddles)]
-    G --> I[Ownership assigned: Host & CPU paddles]
-    G --> J[Gameplay begins: ball movement, scoring, UI updates via NetworkVariables]
-
-    %% Notes
-    classDef notes fill:#f9f,stroke:#333,stroke-width:1px,color:#000;
-    K[NGO Gotchas: Pre-placed objects auto-spawn, assign ownership with ChangeOwnership, NetworkVariables in OnNetworkSpawn, UI via OnValueChanged]:::notes
+    E --> F
+    F --> G
+    G --> H
+    G --> I
+    G --> J
+    G --> K
 
