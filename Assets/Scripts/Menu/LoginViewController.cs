@@ -1,13 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Elements.Client;
 using Elements.Model;
+using Elements.Crossfire;
 
-public class LoginViewController : MonoBehaviour
+public class LoginViewController : MonoBehaviour, IViewController
 {
     [SerializeField]
     private Toggle loginToExistingAccountView;
@@ -48,26 +49,24 @@ public class LoginViewController : MonoBehaviour
     [SerializeField]
     private TMPro.TMP_Text createAccountErrorText;
 
-    //It's generally best to keep this in an external config to help determine the environment
-    private const string ELEMENTS_ROOT_URL = "http://localhost:8080/api/rest";
+    [SerializeField]
+    private NetworkSessionManager sessionManager;
 
-    //Must match the name of the Application that was created in Elements
-    private const string ELEMENTS_APPLICATION_NAME = "Pong";
+    // IViewController Events
+    public event Action OnBack;
+    public event Action OnNext;
 
 #region Setup
 
-    private async void Start()
+    private void Start()
     {
         //You only need to do this once
         if(!ElementsClient.IsInitialized())
         {
-            ElementsClient.Initialize(ELEMENTS_ROOT_URL);
-            HelloClient.HelloApi.Configuration.DefaultHeaders["Elements-SessionSecret"] = ElementsClient.Api.Configuration.ApiKey["Elements-SessionSecret"];
-            var respsonse = await HelloClient.HelloApi.SayHelloWithAuthAsync();
-            Debug.Log(respsonse);
+            ElementsClient.Initialize(ElementsProperties.ELEMENTS_ROOT_URL);
         }
 
-        SetDefaultViewState();
+        SetDefaultViewState();        
     }
 
     private async void SetDefaultViewState()
@@ -105,18 +104,18 @@ public class LoginViewController : MonoBehaviour
 
     public void OnLoginButtonPress()
     {
-        DoLogin(loginUsernameInputField.text, loginPasswordInputField.text, null);
+        DoLogin(loginUsernameInputField.text, loginPasswordInputField.text);
     }
 
     public void OnContinuePress()
     {
-        LoadPongScene();
+        OnNext?.Invoke();
     }
 
     public void OnLogoutPress()
     {
         ElementsClient.LogOut();
-
+        OnBack?.Invoke();
         newSessionView.isOn = true;
     }
 
@@ -137,12 +136,8 @@ public class LoginViewController : MonoBehaviour
 
 #endregion
 
-    private void LoadPongScene()
-    {
-        SceneManager.LoadScene("Pong");
-    }
 
-    private async void DoLogin(string username, string password, string profileId)
+    private async void DoLogin(string username, string password, string profileId = null)
     {
         var request = new UsernamePasswordSessionRequest(
             userId: username,
@@ -155,8 +150,11 @@ public class LoginViewController : MonoBehaviour
         if (sessionCreation != null)
         {
             ElementsClient.SetSessionCreation(sessionCreation);
-            await FetchProfile(sessionCreation.Session.User.Id);
-            LoadPongScene();
+
+            if(sessionCreation.Session.Profile == null)
+                await FetchProfile(sessionCreation.Session.User.Id);
+
+            OnNext?.Invoke();
         }
     }
 
@@ -171,7 +169,7 @@ public class LoginViewController : MonoBehaviour
             {
                 //Make sure that you've created an application named Pong in Elements
                 new CreateProfileSignupRequest(
-                    applicationId: ELEMENTS_APPLICATION_NAME,
+                    applicationId: ElementsProperties.ELEMENTS_APPLICATION_NAME,
                     displayName: displayname
                 )
             }
@@ -186,7 +184,7 @@ public class LoginViewController : MonoBehaviour
     private async Task FetchProfile(string userId)
     {
         var profiles = await ElementsClient.Api.GetProfilesAsync(
-            application: ELEMENTS_APPLICATION_NAME,
+            application: ElementsProperties.ELEMENTS_APPLICATION_NAME,
             user: userId
         );
 
@@ -197,9 +195,6 @@ public class LoginViewController : MonoBehaviour
             if (profile != null)
             {
                 ElementsClient.SetProfile(profile);
-                HelloClient.HelloApi.Configuration.ApiKey["Elements-SessionSecret"] = ElementsClient.Api.Configuration.ApiKey["Elements-SessionSecret"];
-                var respsonse = await HelloClient.HelloApi.SayHelloWithAuthAsync();
-                Debug.Log(respsonse);
             }
         }
 
@@ -227,7 +222,7 @@ public class LoginViewController : MonoBehaviour
             }
             else
             {
-                LoadPongScene();
+                OnNext?.Invoke();
             }
         }
     }
@@ -236,7 +231,7 @@ public class LoginViewController : MonoBehaviour
     {
         var profile = await ElementsClient.Api.CreateProfileAsync(new CreateProfileRequest
         (
-            applicationId: ELEMENTS_APPLICATION_NAME,
+            applicationId: ElementsProperties.ELEMENTS_APPLICATION_NAME,
             displayName: displayName,
             userId: ElementsClient.GetSession().User.Id
         ));
@@ -244,7 +239,7 @@ public class LoginViewController : MonoBehaviour
         if (profile != null)
         {
             ElementsClient.GetSession().Profile = profile;
-            LoadPongScene();
+            OnNext?.Invoke();
         }
     }
 

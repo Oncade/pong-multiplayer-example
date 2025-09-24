@@ -15,8 +15,8 @@ Name | Type | Description | Notes
 **Value** | **string** |  | [optional] 
 **Content** | **Object** |  | [optional] 
 **FileName** | **string** |  | [optional] 
-**Simple** | **bool** |  | [optional] 
 **FormDataContentDisposition** | [**FormDataContentDisposition**](FormDataContentDisposition.md) |  | [optional] 
+**Simple** | **bool** |  | [optional] 
 **ParameterizedHeaders** | [**BodyPartParameterizedHeaders**](BodyPartParameterizedHeaders.md) |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

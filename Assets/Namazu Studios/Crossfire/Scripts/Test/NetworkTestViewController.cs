@@ -1,6 +1,9 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿// Must have generated the Elements client code
+#if ELEMENTS_GENERATED
+
+using UnityEngine;
 using Unity.Netcode;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Elements.Client;
@@ -257,3 +260,5 @@ namespace Elements.Crossfire.Test
         }
     }
 }
+
+#endif

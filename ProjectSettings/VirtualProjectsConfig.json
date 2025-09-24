@@ -1,4 +1,6 @@
 {
-  "PlayerTags": [],
+  "PlayerTags": [
+    "CPU"
+  ],
   "version": "1.6.1"
 }

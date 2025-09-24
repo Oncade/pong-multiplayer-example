@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 
 public class ComputerPaddle : Paddle
-{
-    [SerializeField]
-    private Rigidbody2D ball;
+{    
+    public Rigidbody2D ball;
 
     private void FixedUpdate()
     {
+        if (ball == null) return;
+
         // Check if the ball is moving towards the paddle (positive x velocity)
         // or away from the paddle (negative x velocity)
         if (ball.linearVelocity.x > 0f)

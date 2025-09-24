@@ -5,3 +5,10 @@ TextScriptImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 319085
+  packageName: Namazu Elements Codegen plugin for Unity | Cross-Platform GBaaS
+  packageVersion: 1.1.1
+  assetPath: Assets/Namazu Studios/Elements Client Plugin/CodeTemplates.cs
+  uploadId: 791050

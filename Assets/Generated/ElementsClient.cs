@@ -112,13 +112,21 @@ namespace Elements.Client
         }
 
         /// <summary>
+        /// Gets the active session token
+        /// </summary>
+        /// <returns>The session secret or token</returns>
+        public static string GetSessionToken()
+        {
+            return sessionToken;
+        }
+
+        /// <summary>
         /// Adds a profile to the session and saves to disk if caching is enabled.
         /// </summary>
         /// <param name="p">The profile to set in the session</param>
         public static void SetProfile(Model.Profile p)
         {
             session.Profile = p;
-            SetSessionHeader();
 
             if (shouldCacheSession)
             {
@@ -204,7 +212,7 @@ namespace Elements.Client
         }
 
         private static void SetSessionHeader()
-        {            
+        {
             Api.Configuration.ApiKey["Elements-SessionSecret"] = session.Profile?.Id != null ? sessionToken + " p" + session.Profile.Id : sessionToken;
         }
 
