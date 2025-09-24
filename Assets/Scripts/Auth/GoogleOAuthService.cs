@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class GoogleOAuthLogin
+public class GoogleOAuthService
 {
     private const string clientId = ""; // From Google Cloud
     private const string clientSecret = ""; // From Google Cloud

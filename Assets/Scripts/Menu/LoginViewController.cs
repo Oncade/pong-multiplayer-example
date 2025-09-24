@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Elements.Client;
 using Elements.Model;
 using Elements.Crossfire;
@@ -134,48 +133,24 @@ public class LoginViewController : MonoBehaviour, IViewController
         CreateProfile(createProfileDisplayNameInputField.text);
     }
 
-#endregion
+    #endregion
 
 
     private async void DoLogin(string username, string password, string profileId = null)
     {
-        var request = new UsernamePasswordSessionRequest(
-            userId: username,
-            password: password,
-            profileId: profileId
-        );
+        var session = await ElementsAuthService.DoLoginAsync(username, password, profileId);
 
-        var sessionCreation = await ElementsClient.Api.CreateUsernamePasswordSessionAsync(request);
-
-        if (sessionCreation != null)
+        if (session != null)
         {
-            ElementsClient.SetSessionCreation(sessionCreation);
-
-            if(sessionCreation.Session.Profile == null)
-                await FetchProfile(sessionCreation.Session.User.Id);
-
             OnNext?.Invoke();
         }
     }
 
     private async void DoUsernamePasswordSignUp(string username, string password, string displayname)
     {
-        var userCreateResponse = await ElementsClient.Api.SignUpUserAsync(new UserCreateRequest
-        (
-            name: username,
-            password: password,
-            level: UserCreateRequest.LevelEnum.USER,
-            profiles: new List<CreateProfileSignupRequest>
-            {
-                //Make sure that you've created an application named Pong in Elements
-                new CreateProfileSignupRequest(
-                    applicationId: ElementsProperties.ELEMENTS_APPLICATION_NAME,
-                    displayName: displayname
-                )
-            }
-        ));
+        var userCreateResponse = await ElementsAuthService.DoSignUpAsync(username, password, displayname);
 
-        if(userCreateResponse != null)
+        if (userCreateResponse != null)
         {
             DoLogin(username, password, userCreateResponse.Profiles.FirstOrDefault()?.Id);
         }
@@ -183,26 +158,12 @@ public class LoginViewController : MonoBehaviour, IViewController
 
     private async Task FetchProfile(string userId)
     {
-        var profiles = await ElementsClient.Api.GetProfilesAsync(
-            application: ElementsProperties.ELEMENTS_APPLICATION_NAME,
-            user: userId
-        );
-
-        if (profiles != null)
-        {
-            var profile = profiles.Objects.FirstOrDefault();
-
-            if (profile != null)
-            {
-                ElementsClient.SetProfile(profile);
-            }
-        }
-
+        await ElementsAuthService.FetchProfileAsync(userId);
     }
 
     private async void DoLoginWithGoogle()
     {
-        var googleLogin = new GoogleOAuthLogin();
+        var googleLogin = new GoogleOAuthService();
         string idToken = await googleLogin.LoginAsync();
         Debug.Log("Google ID Token: " + idToken);
 
