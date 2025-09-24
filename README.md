@@ -128,8 +128,8 @@ The project is designed to let the host player login manually, while a cloned in
 
 ```mermaid
 flowchart TD
-    A[Main Project (Host Player)] -->|Manual login / signup| B[Fetch Profile]
-    C[Cloned Project (CPU Player)] -->|Auto login as CPU| D[Ensure Profile Exists]
+    A[Main Project (Host Player)] -- "Manual login / signup" --> B[Fetch Profile]
+    C[Cloned Project (CPU Player)] -- "Auto login as CPU" --> D[Ensure Profile Exists]
 
     B --> E[Matchmaking (Elements + Crossfire)]
     D --> E
@@ -144,3 +144,4 @@ flowchart TD
     %% Notes
     classDef notes fill:#f9f,stroke:#333,stroke-width:1px,color:#000;
     K[NGO Gotchas: Pre-placed objects auto-spawn, assign ownership with ChangeOwnership, NetworkVariables in OnNetworkSpawn, UI via OnValueChanged]:::notes
+
