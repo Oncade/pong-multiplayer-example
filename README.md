@@ -11,6 +11,8 @@ This is a **Unity-based multiplayer Pong demo** that demonstrates:
 
 The project is designed to let the host player login manually, while a cloned instance automatically logs in as a CPU player.
 
+This project is based (with permission) on the unity-pong-tutorial project found [here](https://github.com/zigurous/unity-pong-tutorial).
+
 ---
 
 ## Features
