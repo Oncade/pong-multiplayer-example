@@ -43,7 +43,7 @@ namespace Elements.Crossfire
         private readonly HashSet<string> pendingPeers = new();
         private readonly Dictionary<string, PlayerInfo> players = new();
 
-        // Enhanced events with state information
+        // Events with state information
         public event Action<NetworkSessionState> OnSessionStateChanged;
         public event Action<string> OnMatchJoined;
         public event Action<string, bool> OnHostChanged;
@@ -266,10 +266,56 @@ namespace Elements.Crossfire
             // Reset match state but keep session active
             ResetMatchState();
             SetSessionState(NetworkSessionState.Connected);
+
+            // Let the server know that we are leaving so that it can signal the other players
+            var request = new LeaveControlMessage();
+            request.SetProfileId(sessionConfig.profileId);
+
+            SignalingClient.SendWSMessage(request.ToJsonString<LeaveControlMessage>());
         }
 
-#endregion
-#region INITIALIZATION
+        /// <summary>
+        /// (Host only) Attempts to close the match, preventing any new players from joining.
+        /// </summary>
+        public void CloseMatch()
+        {
+            if (!isHost) return;
+
+            var request = new CloseControlMessage();
+            request.SetProfileId(sessionConfig.profileId);
+
+            SignalingClient.SendWSMessage(request.ToJsonString<CloseControlMessage>());
+        }
+
+        /// <summary>
+        /// (Host only) Attempts to open the match, allowing new players to join.
+        /// Newly created matches are OPEN by default.
+        /// </summary>
+        public void OpenMatch()
+        {
+            if (!isHost) return;
+
+            var request = new OpenControlMessage();
+            request.SetProfileId(sessionConfig.profileId);
+
+            SignalingClient.SendWSMessage(request.ToJsonString<OpenControlMessage>());
+        }
+
+        /// <summary>
+        /// (Host only) Attempts to end the match, indicating that the server can start the cleanup process.        
+        /// </summary>
+        public void EndMatch()
+        {
+            if (!isHost) return;
+
+            var request = new EndControlMessage();
+            request.SetProfileId(sessionConfig.profileId);
+
+            SignalingClient.SendWSMessage(request.ToJsonString<EndControlMessage>());
+        }
+
+        #endregion
+        #region INITIALIZATION
 
         private void InitializeComponents()
         {
@@ -505,12 +551,12 @@ namespace Elements.Crossfire
             hostProfileId = message.profileId;
             bool wasTransferred = !string.IsNullOrEmpty(oldHostId) && oldHostId != hostProfileId;
 
-            isHost = (hostProfileId == sessionConfig.profileId);
+            isHost = hostProfileId == sessionConfig.profileId;
 
             // Update host in player list
             foreach (var player in players.Values)
             {
-                player.isHost = (player.profileId == hostProfileId);
+                player.isHost = player.profileId == hostProfileId;
             }
 
             OnHostChanged?.Invoke(hostProfileId, wasTransferred);

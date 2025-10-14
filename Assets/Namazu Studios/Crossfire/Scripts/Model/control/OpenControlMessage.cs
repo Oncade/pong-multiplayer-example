@@ -3,16 +3,13 @@
 namespace Elements.Crossfire.Model
 {
 
-    public class LeaveBroadcastSignal : BroadcastSignal
+    public class OpenControlMessage : ControlMessage
     {
         [JsonProperty]
         private string profileId;
 
         [JsonProperty]
-        private SignalLifecycle lifecycle = SignalLifecycle.MATCH;
-
-        [JsonProperty]
-        private MessageType messageType = MessageType.SIGNAL_LEAVE;
+        private MessageType type = MessageType.OPEN;
 
         public string GetProfileId()
         {
@@ -23,17 +20,10 @@ namespace Elements.Crossfire.Model
         {
             this.profileId = profileId;
         }
-
-
-        public SignalLifecycle GetLifecycle()
-        {
-            return lifecycle;
-        }
-
-
+    
         public MessageType GetMessageType()
         {
-            return messageType;
+            return type;
         }
 
     }
