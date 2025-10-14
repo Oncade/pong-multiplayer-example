@@ -26,16 +26,16 @@ namespace Elements.Client
 
         private static void InitializeHelloApi()
         {
-            if(!ElementsClient.IsInitialized())
+            if(ElementsClient.Default == null)
             {
                 Debug.LogError("HelloApi cannot be initialized until ElementsClient is initialized");
                 return;
             }
 
             //Application base path typically uses app/rest instead of api/rest
-            var basePath = ElementsClient.Api.Configuration.BasePath.Replace("api", "app");
+            var basePath = ElementsClient.Default.Api.Configuration.BasePath.Replace("api", "app");
             helloApi = new HelloApi($"{basePath}/{ELEMENT_NAME}");
-            helloApi.ApiClient.SerializerSettings = ElementsClient.Api.ApiClient.SerializerSettings;
+            helloApi.ApiClient.SerializerSettings = ElementsClient.Default.Api.ApiClient.SerializerSettings;
         }
     }
 
