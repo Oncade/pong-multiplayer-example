@@ -59,26 +59,22 @@ public class LoginViewController : MonoBehaviour, IViewController
 
     private void Start()
     {
-        //You only need to do this once
-        if(!ElementsClient.IsInitialized())
-        {
-            ElementsClient.Initialize(ElementsProperties.ELEMENTS_ROOT_URL);
-        }
+        ElementsClient.InitializeDefault(ElementsProperties.ELEMENTS_ROOT_URL);
 
         SetDefaultViewState();        
     }
 
     private async void SetDefaultViewState()
     {
-        if(ElementsClient.IsSessionActive())
+        if(ElementsClient.Default.IsSessionActive())
         {
-            if(ElementsClient.GetSession().Profile == null)
+            if(ElementsClient.Default.GetSession().Profile == null)
             {
-                await FetchProfile(ElementsClient.GetSession().User.Id);
+                await FetchProfile(ElementsClient.Default.GetSession().User.Id);
             }
 
             activeSessionView.isOn = true;
-            welcomeBackText.text = $"Welcome back\n{ElementsClient.GetSession()?.Profile?.DisplayName}!";
+            welcomeBackText.text = $"Welcome back\n{ElementsClient.Default.GetSession()?.Profile?.DisplayName}!";
         }
         else
         {            
@@ -113,7 +109,7 @@ public class LoginViewController : MonoBehaviour, IViewController
 
     public void OnLogoutPress()
     {
-        ElementsClient.LogOut();
+        ElementsClient.Default.ClearSession();
         OnBack?.Invoke();
         newSessionView.isOn = true;
     }
@@ -138,7 +134,7 @@ public class LoginViewController : MonoBehaviour, IViewController
 
     private async void DoLogin(string username, string password, string profileId = null)
     {
-        var session = await ElementsAuthService.DoLoginAsync(username, password, profileId);
+        var session = await ElementsClient.Default.DoLoginAsync(username, password, profileId);
 
         if (session != null)
         {
@@ -148,7 +144,7 @@ public class LoginViewController : MonoBehaviour, IViewController
 
     private async void DoUsernamePasswordSignUp(string username, string password, string displayname)
     {
-        var userCreateResponse = await ElementsAuthService.DoSignUpAsync(username, password, displayname);
+        var userCreateResponse = await ElementsClient.Default.DoSignUpAsync(username, password, displayname);
 
         if (userCreateResponse != null)
         {
@@ -158,7 +154,7 @@ public class LoginViewController : MonoBehaviour, IViewController
 
     private async Task FetchProfile(string userId)
     {
-        await ElementsAuthService.FetchProfileAsync(userId);
+        await ElementsClient.Default.FetchProfileAsync(userId);
     }
 
     private async void DoLoginWithGoogle()
@@ -168,16 +164,16 @@ public class LoginViewController : MonoBehaviour, IViewController
         Debug.Log("Google ID Token: " + idToken);
 
         // Send to your server
-        var sessionCreation = await ElementsClient.Api.CreateOidcSessionAsync(
+        var sessionCreation = await ElementsClient.Default.Api.CreateOidcSessionAsync(
             new OidcSessionRequest(jwt: idToken)
         );
 
         if (sessionCreation != null)
         {
-            ElementsClient.SetSessionCreation(sessionCreation);
+            ElementsClient.Default.SetSessionCreation(sessionCreation);
             await FetchProfile(sessionCreation.Session.User.Id);
 
-            if(ElementsClient.GetSession().Profile == null)
+            if(ElementsClient.Default.GetSession().Profile == null)
             {
                 createProfileView.isOn = true;
             }
@@ -190,16 +186,16 @@ public class LoginViewController : MonoBehaviour, IViewController
 
     private async void CreateProfile(string displayName)
     {
-        var profile = await ElementsClient.Api.CreateProfileAsync(new CreateProfileRequest
+        var profile = await ElementsClient.Default.Api.CreateProfileAsync(new CreateProfileRequest
         (
             applicationId: ElementsProperties.ELEMENTS_APPLICATION_NAME,
             displayName: displayName,
-            userId: ElementsClient.GetSession().User.Id
+            userId: ElementsClient.Default.GetSession().User.Id
         ));
 
         if (profile != null)
         {
-            ElementsClient.GetSession().Profile = profile;
+            ElementsClient.Default.GetSession().Profile = profile;
             OnNext?.Invoke();
         }
     }

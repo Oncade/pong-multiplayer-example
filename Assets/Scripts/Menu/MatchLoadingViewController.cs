@@ -18,15 +18,14 @@ public class MatchLoadingViewController : MonoBehaviour, IViewController
     [SerializeField]
     private NetworkSessionManager sessionManager;
 
-    public void LoadMatch(Match match = null)
+    public void LoadMatch(MultiMatch match = null)
     {
         messageText.text = "Waiting for opponent...";
 
-        var sessionToken = ElementsClient.Api.Configuration.ApiKey["Elements-SessionSecret"].Split(" ")[0];
-
         if (!sessionManager.IsSessionActive)
         {
-            sessionManager.StartSession(ElementsClient.GetSession().Profile.Id, sessionToken);
+            sessionManager.StartSession(ElementsClient.Default.GetSession().Profile.Id,
+                                        ElementsClient.Default.GetSessionToken());
 
             sessionManager.OnMatchJoined += OnMatchJoined;
             sessionManager.OnPlayerJoined += OnPlayerJoined;

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Unity.Netcode;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,6 +26,10 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private Text clientScoreText;
     [SerializeField] private Text hostName;
     [SerializeField] private Text clientName;
+    [SerializeField] private GameOverView gameOverView;
+
+    [Header("Game Options")]
+    [SerializeField] private uint scoreToWin = 3;
 
     // ------------------------------------------------------
     // Network State
@@ -48,7 +53,7 @@ public class GameManager : NetworkBehaviour
 
     public override async void OnNetworkSpawn()
     {
-        // Guard: Skip setup if not in a connected multiplayer session
+        // Skip setup if not in a connected multiplayer session
         if (!IsConnectedGame())
             return;
 
@@ -56,12 +61,10 @@ public class GameManager : NetworkBehaviour
         hostScore.OnValueChanged += OnHostScoreChanged;
         clientScore.OnValueChanged += OnClientScoreChanged;
 
-        bool isHost = NetworkManager.Singleton.IsServer;
-
         // Find the opponent (this is a 2-player game so we just take the other one)
         var opponentPlayerInfo = NetworkSessionManager.Instance
             .GetConnectedPlayers()
-            .First(p => p.isHost != isHost);
+            .First(p => p.isHost != IsServer);
 
         // Fetch opponent's profile for name display
         await FetchOpponentProfile(opponentPlayerInfo.profileId);
@@ -71,7 +74,7 @@ public class GameManager : NetworkBehaviour
         InitializeComponents();
 
         // Host takes control of starting the game and assigning ownership
-        if (isHost)
+        if (IsServer)
         {
             AssignOwnership(opponentPlayerInfo);
             NewGame();
@@ -95,8 +98,10 @@ public class GameManager : NetworkBehaviour
         NewRound();
     }
 
-    public void NewRound()
+    private void NewRound()
     {
+        if (!IsServer) return;
+
         // Reset paddles
         hostPaddle.ResetPosition();
         clientPaddle.ResetPosition();
@@ -117,6 +122,13 @@ public class GameManager : NetworkBehaviour
         ball.AddStartingForce();
     }
 
+    private void ReturnToMenu()
+    {
+        NetworkSessionManager.Instance.EndSession();
+
+        SceneManager.LoadScene("Login");
+    }
+
     // ------------------------------------------------------
     // Scoring
     // ------------------------------------------------------
@@ -126,7 +138,6 @@ public class GameManager : NetworkBehaviour
         if (IsServer)
         {
             hostScore.Value++;
-            NewRound();
         }
     }
 
@@ -135,18 +146,50 @@ public class GameManager : NetworkBehaviour
         if (IsServer)
         {
             clientScore.Value++;
-            NewRound();
         }
     }
 
     private void OnHostScoreChanged(int oldValue, int newValue)
     {
         hostScoreText.text = newValue.ToString();
+
+        if (IsWinner(newValue))
+        {
+            EndMatch(hostName.text);
+        }
+        else
+        {
+            NewRound();
+        }
     }
 
     private void OnClientScoreChanged(int oldValue, int newValue)
-    {
+    {        
         clientScoreText.text = newValue.ToString();
+
+        if(IsWinner(newValue))
+        {
+            EndMatch(clientName.text);
+        }
+        else
+        {
+            NewRound();
+        }
+    }
+
+    private void EndMatch(string winnerName)
+    {
+        if (IsServer)
+        {
+            NetworkSessionManager.Instance.EndMatch();
+        }
+
+        gameOverView.StartCountdownWithWinner(winnerName, ReturnToMenu);
+    }
+
+    private bool IsWinner(int score)
+    {
+        return score == scoreToWin;
     }
 
     // ------------------------------------------------------
@@ -172,7 +215,7 @@ public class GameManager : NetworkBehaviour
 
     private bool IsConnectedGame()
     {
-        return ElementsClient.IsSessionActive() && NetworkSessionManager.Instance != null;
+        return ElementsClient.Default.IsSessionActive() && NetworkSessionManager.Instance != null;
     }
 
     // ------------------------------------------------------
@@ -181,20 +224,20 @@ public class GameManager : NetworkBehaviour
 
     private async Task FetchOpponentProfile(string opponentProfileId)
     {
-        opponentProfile = await ElementsClient.Api.GetProfileAsync(opponentProfileId);
+        opponentProfile = await ElementsClient.Default.Api.GetProfileAsync(opponentProfileId);
     }
 
     private void SetPlayerNames()
     {
         if (IsServer)
         {
-            hostName.text = ElementsClient.GetSession().Profile.DisplayName;
+            hostName.text = ElementsClient.Default.GetSession().Profile.DisplayName;
             clientName.text = opponentProfile.DisplayName;
         }
         else
         {
             hostName.text = opponentProfile.DisplayName;
-            clientName.text = ElementsClient.GetSession().Profile.DisplayName;
+            clientName.text = ElementsClient.Default.GetSession().Profile.DisplayName;
         }
     }
 

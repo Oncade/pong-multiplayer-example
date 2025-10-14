@@ -9,9 +9,9 @@ public class JoinMatchButton : MonoBehaviour
 
     private LobbyViewController viewController;
 
-    private Match match;
+    private MultiMatch match;
     
-    public void SetMatch(LobbyViewController viewController, Match match)
+    public void SetMatch(LobbyViewController viewController, MultiMatch match)
     {
         this.viewController = viewController;
         this.match = match;

@@ -2536,7 +2536,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1677417363}
         m_TargetAssemblyTypeName: LoginViewController, Assembly-CSharp
-        m_MethodName: OnCreateAccount
+        m_MethodName: OnNewAccountButtonPress
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2834,7 +2834,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1677417363}
         m_TargetAssemblyTypeName: LoginViewController, Assembly-CSharp
-        m_MethodName: OnNewAccountButtonPress
+        m_MethodName: OnCreateAccount
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3100,7 +3100,7 @@ PrefabInstance:
     - target: {fileID: 5239100649621730186, guid: 308946aa2cfbe47e1a58d4a5590a2064,
         type: 3}
       propertyPath: loggingEnabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5239100649621730186, guid: 308946aa2cfbe47e1a58d4a5590a2064,
         type: 3}

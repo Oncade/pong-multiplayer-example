@@ -59,6 +59,8 @@ public class MainMenuViewController : MonoBehaviour
             await Task.Delay(100);
         }
 
-        NetworkManager.Singleton.SceneManager.LoadScene("PongMulti", UnityEngine.SceneManagement.LoadSceneMode.Single);
+        //Clients cannot load the scene
+        if (NetworkManager.Singleton.IsServer)
+            NetworkManager.Singleton.SceneManager.LoadScene("PongMulti", UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
 }
