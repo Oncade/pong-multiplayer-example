@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
 using ParrelSync;
+#endif
 using System.Linq;
 using Elements.Client;
 using Elements.Crossfire;
@@ -22,6 +24,7 @@ public class CPUPlayerLoader : MonoBehaviour
 
     private void CheckCpuPlayer()
     {
+        #if UNITY_EDITOR
         if (ClonesManager.IsClone() && ElementsClient.Default != null && ElementsClient.Default.IsSessionActive())
         {
             Debug.Log("Logging in as a CPU player");
@@ -31,8 +34,9 @@ public class CPUPlayerLoader : MonoBehaviour
             ElementsClient.InitializeDefault(ElementsProperties.ELEMENTS_ROOT_URL, false);
 
             DoUsernamePasswordSignUp(USER_NAME, password, DISPLAY_NAME);
-            
+
         }
+        #endif
     }
 
     private async void DoUsernamePasswordSignUp(string username, string password, string displayname)
