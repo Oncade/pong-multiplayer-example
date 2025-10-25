@@ -60,7 +60,7 @@ public class LoginViewController : MonoBehaviour, IViewController
     private void Start()
     {
         ElementsClient.InitializeDefault(ElementsProperties.ELEMENTS_ROOT_URL);
-
+        ElementsClient.Default.ClearSession();
         SetDefaultViewState();        
     }
 
