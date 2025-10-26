@@ -1,45 +1,52 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 using ParrelSync;
 #endif
 using System.Linq;
+using System.Threading.Tasks;
 using Elements.Client;
 using Elements.Crossfire;
-using Elements.Crossfire.Model;
 
 public class CPUPlayerLoader : MonoBehaviour
 {     
 
-    [SerializeField]
-    private NetworkSessionManager sessionManager;
-
     public static string USER_NAME = "cpu_player";
     public static string DISPLAY_NAME = "CPU";
     
-    private void Start()
-    {
-        CheckCpuPlayer();
-    }
-
-    private void CheckCpuPlayer()
+    private async void Start()
     {
         #if UNITY_EDITOR
-        if (ClonesManager.IsClone() && ElementsClient.Default != null && ElementsClient.Default.IsSessionActive())
+        await CheckCpuPlayer();
+        #endif
+    }
+
+    private async Task CheckCpuPlayer()
+    {
+        #if UNITY_EDITOR
+        if (ClonesManager.IsClone())
         {
             Debug.Log("Logging in as a CPU player");
 
             const string password = "test";
 
-            ElementsClient.InitializeDefault(ElementsProperties.ELEMENTS_ROOT_URL, false);
+            if(ElementsClient.Default == null)
+            {
+                ElementsClient.InitializeDefault(ElementsProperties.ELEMENTS_ROOT_URL, false);
+            }
 
-            DoUsernamePasswordSignUp(USER_NAME, password, DISPLAY_NAME);
+            if(!ElementsClient.Default.IsSessionActive())
+            {
+                await DoUsernamePasswordSignUp(USER_NAME, password, DISPLAY_NAME);
+            }
 
+            //Forcibly proceed through the UI
+            var loginVC = FindAnyObjectByType<LoginViewController>();
+            loginVC.OnContinuePress();
         }
         #endif
     }
 
-    private async void DoUsernamePasswordSignUp(string username, string password, string displayname)
+    private async Task DoUsernamePasswordSignUp(string username, string password, string displayname)
     {
         try
         {
@@ -47,16 +54,16 @@ public class CPUPlayerLoader : MonoBehaviour
 
             if (userCreateResponse != null)
             {                
-                DoLogin(username, password, userCreateResponse.Profiles.FirstOrDefault()?.Id);
+                await DoLogin(username, password, userCreateResponse.Profiles.FirstOrDefault()?.Id);
             }
         }
         catch
         {
-            DoLogin(username, password);
+            await DoLogin(username, password);
         }
     }
 
-    private async void DoLogin(string username, string password, string profileId = null)
+    private async Task DoLogin(string username, string password, string profileId = null)
     {
         // Clear headers of any old session data in case it expired
         ElementsClient.Default.LogOut();
@@ -65,15 +72,11 @@ public class CPUPlayerLoader : MonoBehaviour
 
         if (session != null)
         {
-            if (!sessionManager.IsSessionActive)
+            if (!NetworkSessionManager.Instance.IsSessionActive)
             {
                 Debug.Log($"Starting session with id {session.Session.Profile.Id}");
-                sessionManager.StartSession(session.Session.Profile.Id, session.SessionSecret);
-            }
-
-            //Forcibly proceed through the UI
-            var loginVC = FindAnyObjectByType<LoginViewController>();
-            loginVC.OnContinuePress();
+                NetworkSessionManager.Instance.StartSession(session.Session.Profile.Id, session.SessionSecret);
+            }            
         }
     }
 
