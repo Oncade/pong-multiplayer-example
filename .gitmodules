@@ -1,0 +1,3 @@
+[submodule "deploy"]
+	path = deploy
+	url = http://admin:passwd@localhost:8080/code/oncade
